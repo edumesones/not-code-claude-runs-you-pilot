@@ -1,8 +1,10 @@
-# Feature Development Cycle (8 Phases)
+# Feature Development Cycle (9 Phases: 8 Core + Phase 5.5 VERIFY)
 
 ## Objetivo
 
 Este documento define el flujo de trabajo exacto para implementar cualquier feature. Siguiendo este ciclo se garantiza consistencia, trazabilidad y calidad.
+
+**NUEVO:** Fase 5.5 (VERIFY) - Browser automation tests con agent-browser para validación frontend automática.
 
 ---
 
@@ -10,7 +12,7 @@ Este documento define el flujo de trabajo exacto para implementar cualquier feat
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    FEATURE DEVELOPMENT CYCLE (8 PHASES)                       │
+│                    FEATURE DEVELOPMENT CYCLE (9 PHASES)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │   1. INTERVIEW       2. THINK CRITICALLY    3. PLAN         4. BRANCH       │
@@ -31,7 +33,15 @@ Este documento define el flujo de trabajo exacto para implementar cualquier feat
 │   └──────────────────────────────────────────────────────────────┘          │
 │       │                                                                      │
 │       ▼                                                                      │
-│   7. MERGE              6. PR              ◄────────────────────            │
+│   5.5 VERIFY ← NUEVO!                                                        │
+│   ┌──────────────────────────────────────────────────────────────┐          │
+│   │ agent-browser E2E → Screenshots → Security Filters            │          │
+│   │ Auto-run si cambios tsx/jsx/css + test scripts existen        │          │
+│   │ Bloquea PR si tests fallan                                    │          │
+│   └──────────────────────────────────────────────────────────────┘          │
+│       │                                                                      │
+│       ▼                                                                      │
+│   7. MERGE              6. PR (+ test results)  ◄──────────────             │
 │   ┌─────────┐          ┌─────────┐                                          │
 │   │ Review  │   ◄───   │ Push    │                                          │
 │   │ Approve │          │ gh pr   │                                          │
@@ -317,6 +327,144 @@ Implementar siguiendo el plan, con documentación viva.
 
 ---
 
+## Fase 5.5: VERIFY (Browser Automation Tests) ← NUEVO
+
+### Propósito
+Validar automáticamente cambios frontend mediante browser automation antes de crear PR. Usa agent-browser (Anthropic CLI) para E2E testing.
+
+### ¿Cuándo se ejecuta?
+**Automático** cuando Ralph Loop detecta:
+1. ✅ Cambios en archivos frontend (tsx/jsx/css/scss)
+2. ✅ Scripts de test existen en `docs/features/FEAT-XXX/tests/`
+
+Si NO hay cambios frontend o NO hay scripts → **SKIP** (no bloquea)
+
+### Cómo Configurar Tests (Una vez por feature)
+
+**1. Copiar templates:**
+```bash
+cp -r docs/features/_template/tests docs/features/FEAT-XXX/tests
+```
+
+**2. Configurar test-config.json:**
+```json
+{
+  "feature_id": "FEAT-XXX",
+  "base_url": "http://localhost:3000",
+  "test_user": {
+    "email": "feat-xxx-test@example.com",
+    "password": "test-feat-xxx-password"
+  }
+}
+```
+
+**3. Personalizar e2e-flow.sh:**
+```bash
+# Cambiar URLs, selectores, assertions para tu feature
+vim docs/features/FEAT-XXX/tests/e2e-flow.sh
+```
+
+### Ejecución Automática (Ralph Loop)
+
+```bash
+./ralph-feature.sh FEAT-XXX  # o .ps1 en PowerShell
+```
+
+Cuando llega a Phase 5.5:
+```
+[FEAT-XXX] 12:34:56 [INFO] Executing Verify phase (Phase 5.5)
+[FEAT-XXX] 12:34:56 [INFO] Frontend changes detected
+[FEAT-XXX] 12:34:57 [INFO] Running E2E flow tests...
+[FEAT-XXX] 12:35:10 [SUCCESS] E2E tests passed
+[FEAT-XXX] 12:35:11 [INFO] Running security filters...
+[FEAT-XXX] 12:35:12 [SUCCESS] No secrets detected
+[FEAT-XXX] 12:35:12 [SUCCESS] VERIFY phase complete
+```
+
+### Qué hace Phase 5.5
+
+1. **Detecta cambios frontend** (git diff últimos 5 commits)
+2. **Crea test results directory**
+3. **Ejecuta e2e-flow.sh** (test principal)
+4. **Ejecuta e2e-smoke.sh** (opcional, no bloquea)
+5. **Captura screenshots** en cada paso + failures
+6. **Ejecuta security filters** (redacta secrets antes de commit)
+7. **Genera test-report.md**
+8. **Bloquea PR si tests fallan** ❌
+
+### Test Results Structure
+
+```
+docs/features/FEAT-XXX/test-results/
+├── screenshots/
+│   ├── step-01-login-page.png
+│   ├── step-02-feature-page.png
+│   └── step-03-item-created.png
+├── videos/                              (opcional)
+├── console-logs.txt                     (filtrado)
+├── network-logs.json                    (filtrado)
+└── test-report.md
+```
+
+### Security Filters (Automático)
+
+Antes de commit, todos los test results pasan por security filters:
+- **Detecta:** API keys, tokens, passwords, AWS credentials, private keys, DB URLs
+- **Redacta:** Reemplaza con `[REDACTED-API-KEY]`, `[REDACTED-TOKEN]`, etc.
+- **Pre-commit hook:** Bloquea commit si secrets detectados después de filtrado
+
+```bash
+# Instalado automáticamente en setup
+bash .memory-system/scripts/install-git-hooks.sh
+```
+
+### Manual Testing (Sin Ralph Loop)
+
+```bash
+# Ejecutar tests manualmente
+cd docs/features/FEAT-XXX/tests
+bash e2e-flow.sh
+
+# Filtrar secrets
+bash ../../../.memory-system/scripts/security-filters.sh filter-all \
+  ../test-results/
+
+# Commit (con pre-commit hook activo)
+git add test-results/
+git commit -m "FEAT-XXX: Add test results"
+```
+
+### Troubleshooting
+
+**Tests fallan pero UI funciona manualmente:**
+- Verificar que localhost:3000 esté corriendo
+- Revisar selectores en e2e-flow.sh (pueden haber cambiado)
+- Checkear console-logs.txt para errores JS
+
+**Pre-commit hook bloquea commit:**
+```bash
+# Ver qué secrets detectó
+bash .memory-system/scripts/security-filters.sh scan \
+  docs/features/FEAT-XXX/test-results/console-logs.txt
+
+# Filtrar y reintentar
+bash .memory-system/scripts/security-filters.sh filter-all \
+  docs/features/FEAT-XXX/test-results/
+git add docs/features/FEAT-XXX/test-results/
+git commit -m "FEAT-XXX: Add filtered test results"
+```
+
+**Quiero skip Phase 5.5:**
+- No crear `docs/features/FEAT-XXX/tests/` directory
+- Ralph Loop detectará y saltará automáticamente
+
+### 📄 Documentos actualizados
+- `test-results/test-report.md` → Test results
+- `test-results/screenshots/` → Visual evidence
+- `status.md` → Phase: Verify ✅
+
+---
+
 ## Fase 6: PR (Pull Request)
 
 ### Proceso
@@ -326,15 +474,35 @@ Implementar siguiendo el plan, con documentación viva.
 git status
 git diff --stat --no-pager
 
-# 2. Asegurar todo commiteado
+# 2. Asegurar todo commiteado (incluyendo test results si Phase 5.5 corrió)
 git add .
 git commit -m "FEAT-XXX: Final adjustments"
 
 # 3. Push
 git push -u origin feature/XXX-nombre
 
-# 4. Crear PR
+# 4. Crear PR (Ralph Loop incluye test results automáticamente)
 gh pr create --title "FEAT-XXX: Nombre Descriptivo" --body "..." --base main
+```
+
+### PR Body Incluye Test Results (Automático)
+
+Si Phase 5.5 (VERIFY) corrió, el PR automáticamente incluye:
+
+```markdown
+## Test Results
+
+# Test Report: FEAT-XXX
+**Status:** ✅ PASSED
+**Date:** 2025-02-03
+
+## Screenshots
+- step-01-login-page.png
+- step-02-feature-page.png
+- step-03-item-created.png
+
+## Console Logs (filtered)
+[Secrets redacted]
 ```
 
 ### 📄 Documentos actualizados
@@ -389,7 +557,7 @@ Capturar aprendizajes, cerrar contexto, y documentar decisiones para futuras ses
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  RALPH LOOP - 8 ITERACIONES AUTÓNOMAS                                        │
+│  RALPH LOOP - 9 FASES AUTÓNOMAS                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  Iter 1: INTERVIEW          → spec.md            → INTERVIEW_COMPLETE       │
@@ -399,9 +567,12 @@ Capturar aprendizajes, cerrar contexto, y documentar decisiones para futuras ses
 │  Iter 4: BRANCH             → feature/XXX-name   → BRANCH_COMPLETE          │
 │  Iter 5-N: IMPLEMENT        → código + tests     → IMPLEMENT_PROGRESS       │
 │           ...hasta que todas las tasks estén ✅   → IMPLEMENT_COMPLETE       │
-│  Iter N+1: PR               → push + gh pr       → PR_COMPLETE              │
-│  Iter N+2: MERGE            → espera aprobación   → MERGE_COMPLETE          │
-│  Iter N+3: WRAP-UP          → wrap_up.md          → FEATURE_COMPLETE        │
+│  Iter N+1: VERIFY           → browser E2E tests  → VERIFY_COMPLETE          │
+│           ⚠️ Auto-skip si: No frontend changes o no test scripts            │
+│           ⚠️ Bloquea si: Tests fallan                                        │
+│  Iter N+2: PR               → push + gh pr       → PR_COMPLETE              │
+│  Iter N+3: MERGE            → espera aprobación  → MERGE_COMPLETE           │
+│  Iter N+4: WRAP-UP          → wrap_up.md         → FEATURE_COMPLETE         │
 │                                                                              │
 │  ✅ LOOP TERMINADO                                                           │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -413,17 +584,28 @@ Capturar aprendizajes, cerrar contexto, y documentar decisiones para futuras ses
 
 ```
 docs/features/FEAT-XXX/
-├── spec.md           ← Phase 1: Interview (+ Market Validation)
-├── analysis.md       ← Phase 2: Think Critically
-├── design.md         ← Phase 3: Plan
-├── tasks.md          ← Phase 3: Plan
-├── tests.md          ← Phase 5: Implement
-├── status.md         ← Updated each phase
+├── spec.md                ← Phase 1: Interview
+├── analysis.md            ← Phase 2: Think Critically
+├── design.md              ← Phase 3: Plan
+├── tasks.md               ← Phase 3: Plan
+├── tests.md               ← Phase 5: Implement
+├── status.md              ← Updated each phase
+├── tests/                 ← Phase 5.5: VERIFY (NEW!)
+│   ├── helpers.sh         │   Reusable test functions
+│   ├── e2e-flow.sh        │   Main E2E test
+│   ├── e2e-smoke.sh       │   Quick smoke tests
+│   └── test-config.json   │   Test configuration
+├── test-results/          ← Generated by Phase 5.5 (NEW!)
+│   ├── screenshots/       │   Visual evidence
+│   ├── videos/            │   (optional)
+│   ├── console-logs.txt   │   Filtered
+│   ├── network-logs.json  │   Filtered
+│   └── test-report.md     │   Test summary
 └── context/
     ├── session_log.md
-    ├── decisions.md   ← Enriched by Think Critically
+    ├── decisions.md       ← Enriched by Think Critically
     ├── blockers.md
-    └── wrap_up.md     ← Phase 8: Wrap-Up
+    └── wrap_up.md         ← Phase 8: Wrap-Up
 ```
 
 ---
@@ -465,9 +647,18 @@ docs/features/FEAT-XXX/
   □ Push cada 30 min
   □ status.md actualizado
 
+□ VERIFY                              ← NUEVO
+  □ Tests configurados (si frontend feature)
+  □ e2e-flow.sh personalizado
+  □ test-config.json completado
+  □ Browser tests ejecutados
+  □ Security filters aplicados
+  □ test-report.md generado
+  □ status.md → Verify ✅
+
 □ PR
-  □ Todo commiteado
-  □ gh pr create
+  □ Todo commiteado (+ test results)
+  □ gh pr create (incluye test report)
   □ status.md → PR link
 
 □ MERGE
@@ -514,16 +705,19 @@ docs/features/FEAT-XXX/
 
 # Per-Feature Cycle (manual o via Ralph)
 /interview FEAT-001-auth
-/think-critically FEAT-001-auth    # ← NUEVO: 11-step protocol → analysis.md
+/think-critically FEAT-001-auth    # 11-step protocol → analysis.md
 /plan implement FEAT-001-auth      # Lee spec.md + analysis.md
 git checkout -b feature/001-auth
 # Implement (via Ralph o manual)
+# VERIFY (automático si frontend changes)  ← NUEVO
 /git pr
 # Review + merge
 /wrap-up FEAT-001-auth
 
-# O completamente autónomo:
-./ralph-orchestrator.sh 3          # Ejecuta las 8 fases autónomamente
+# O completamente autónomo (9 fases):
+./ralph-feature.sh FEAT-001-auth  # Ejecuta las 9 fases autónomamente
+# o PowerShell:
+.\ralph-feature.ps1 FEAT-001-auth
 ```
 
 ---

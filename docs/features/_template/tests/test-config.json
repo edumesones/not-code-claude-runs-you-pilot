@@ -1,0 +1,45 @@
+{
+  "feature_id": "FEAT-XXX-name",
+  "base_url": "http://localhost:3000",
+  "isolation_strategy": "isolated_user",
+  "test_user": {
+    "email": "feat-xxx-test@example.com",
+    "password": "test-feat-xxx-password",
+    "role": "user",
+    "auto_create": true,
+    "auto_cleanup": true
+  },
+  "tests": [
+    {
+      "name": "e2e-flow",
+      "script": "./e2e-flow.sh",
+      "timeout": 120000,
+      "required": true,
+      "description": "Complete user journey for this feature"
+    },
+    {
+      "name": "smoke-tests",
+      "script": "./e2e-smoke.sh",
+      "timeout": 30000,
+      "required": false,
+      "description": "Quick sanity checks"
+    }
+  ],
+  "options": {
+    "record_video": false,
+    "take_screenshots": true,
+    "capture_console": true,
+    "capture_network": false,
+    "retry_on_failure": true,
+    "max_retries": 2
+  },
+  "database": {
+    "snapshot_enabled": false,
+    "snapshot_path": "./test-results/db-snapshot.sql"
+  },
+  "mock_api": {
+    "enabled": false,
+    "port": 9001,
+    "config_path": "./test-results/mock-config.json"
+  }
+}
