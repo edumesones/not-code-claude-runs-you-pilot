@@ -16,13 +16,13 @@ When using Claude (or any LLM) for multi-step features, we run into:
 
 ## The Pattern That Solves It
 
-**Ralph Loop** executes the complete 8-phase feature development cycle autonomously, with intelligent pause conditions.
+**Ralph Loop** executes the complete 9-phase feature development cycle autonomously (8 core + Phase 5.5 VERIFY), with intelligent pause conditions.
 
 The diagram below shows how this addresses it:
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  RALPH: 8-PHASE AUTONOMOUS FEATURE DEVELOPMENT                 │
+│  RALPH: 9-PHASE AUTONOMOUS FEATURE DEVELOPMENT                 │
 ├────────────────────────────────────────────────────────────────┤
 │                                                                │
 │  1. INTERVIEW      2. THINK CRITICALLY    3. PLAN              │
@@ -31,16 +31,21 @@ The diagram below shows how this addresses it:
 │                       • Red flags                              │
 │                       • Low confidence                         │
 │                                                                │
-│  4. BRANCH         5. IMPLEMENT           6. PR                │
-│  └─ worktree       └─ Atomic commits      └─ Auto-sync main   │
-│                       Real-time docs         Auto-resolve     │
-│                                              conflicts         │
+│  4. BRANCH         5. IMPLEMENT           5.5 VERIFY ← NEW!    │
+│  └─ worktree       └─ Atomic commits      └─ Browser E2E      │
+│                       Real-time docs         agent-browser    │
+│                                              Auto-skip if      │
+│                                              no frontend       │
 │                                                                │
-│  7. MERGE          8. WRAP-UP                                  │
-│  └─ ⏸️ Human review └─ Learnings captured                      │
+│  6. PR             7. MERGE               8. WRAP-UP           │
+│  └─ Auto-sync main └─ ⏸️ Human review     └─ Learnings        │
+│     Auto-resolve      + test results                          │
+│     conflicts                                                  │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
+
+**Phase 5.5 (VERIFY)** uses Anthropic's agent-browser CLI for frontend E2E testing. Runs automatically when tsx/jsx/css files changed. Includes security filters to prevent secret leakage in screenshots/logs.
 
 ## Why This Matters
 

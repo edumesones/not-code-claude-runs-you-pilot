@@ -1,0 +1,46 @@
+{
+  "name": "ralph-loop-memory-system",
+  "version": "1.0.0",
+  "description": "Memory system and browser automation for Ralph Loop methodology",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/agent-browser": "0.8.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "install-browser": "npm install @anthropic-ai/agent-browser@0.8.4",
+    "verify-browser": "agent-browser --version",
+    "security-scan": "bash ./scripts/security-filters.sh pre-commit",
+    "security-scan-win": "powershell -ExecutionPolicy Bypass -File ./scripts/security-filters.ps1 pre-commit",
+    "extract-memory": "node ./scripts/extract-memory.js",
+    "consolidate-memory": "node ./scripts/consolidate-claude-md.js",
+    "memory-stats": "node ./scripts/memory-stats.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edumesones/not-code-claude-runs-you-pilot"
+  },
+  "keywords": [
+    "ralph-loop",
+    "memory-mcp",
+    "agent-browser",
+    "automation",
+    "methodology"
+  ],
+  "author": "",
+  "license": "MIT",
+  "notes": {
+    "security": {
+      "agent-browser-version-lock": "Version 0.8.4 is locked to prevent breaking changes. Update only after testing.",
+      "pre-commit-hooks": "Run security-scan before all commits to prevent secret leakage",
+      "secret-detection": "All test results are scanned for API keys, tokens, passwords before git commit"
+    },
+    "browser-automation": {
+      "test-isolation": "See docs/test-data-isolation.md for test user management",
+      "screenshot-security": "All screenshots are filtered by security-filters.sh before commit"
+    }
+  }
+}

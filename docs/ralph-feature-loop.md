@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ralph Loop is an autonomous development system that executes the complete 8-phase Feature Development Cycle with minimal human intervention.
+Ralph Loop is an autonomous development system that executes the complete 9-phase Feature Development Cycle (8 core + Phase 5.5 VERIFY) with minimal human intervention.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
@@ -87,7 +87,7 @@ cp docs/features/_template/* docs/features/FEAT-001-auth/
 
 ## How It Works
 
-### The 8-Phase Cycle
+### The 9-Phase Cycle
 
 Ralph executes each phase of the Feature Development Cycle:
 
@@ -98,9 +98,12 @@ Ralph executes each phase of the Feature Development Cycle:
 | **3. Plan** | Generates design.md + tasks.md | No |
 | **4. Branch** | Creates git branch | No |
 | **5. Implement** | Executes tasks, commits code | No |
-| **6. PR** | Creates pull request | No |
+| **5.5 Verify** | Browser E2E tests (agent-browser) | No (auto-skip if no frontend) |
+| **6. PR** | Creates pull request + test results | No |
 | **7. Merge** | Waits for approval | **YES - Review PR** |
 | **8. Wrap-Up** | Creates wrap_up.md, documents | No |
+
+**Phase 5.5 (VERIFY) is NEW:** Runs automatically when frontend files changed (tsx/jsx/css) + test scripts exist. Uses Anthropic's agent-browser for E2E testing.
 
 ### Phase Detection
 
@@ -112,16 +115,32 @@ if spec.md has all decisions filled:
         if design.md and tasks.md exist:
             if branch exists:
                 if all tasks [x] complete:
-                    if PR exists:
-                        if PR merged:
-                            if wrap_up.md complete:
-                                → COMPLETE
+                    if frontend_changes AND test_scripts_exist:
+                        if verify_complete:
+                            if PR exists:
+                                if PR merged:
+                                    if wrap_up.md complete:
+                                        → COMPLETE
+                                    else:
+                                        → WRAPUP
+                                else:
+                                    → MERGE (waiting)
                             else:
-                                → WRAPUP
+                                → PR
                         else:
-                            → MERGE (waiting)
+                            → VERIFY  # Phase 5.5
                     else:
-                        → PR
+                        # No frontend changes or no test scripts → skip VERIFY
+                        if PR exists:
+                            if PR merged:
+                                if wrap_up.md complete:
+                                    → COMPLETE
+                                else:
+                                    → WRAPUP
+                            else:
+                                → MERGE (waiting)
+                        else:
+                            → PR
                 else:
                     → IMPLEMENT
             else:

@@ -136,6 +136,26 @@ function Test-ImplementationComplete {
     return $false
 }
 
+function Test-FrontendChanges {
+    # Check if there are tsx/jsx/css/scss files in recent commits
+    $frontendFiles = git diff --name-only HEAD~5 2>$null | Where-Object { $_ -match '\.(tsx?|jsx?|css|scss)$' }
+    return ($frontendFiles -ne $null)
+}
+
+function Test-VerifyNeeded {
+    # Verify is needed if frontend files changed AND test scripts exist
+    $testDir = "$FeatureDir/tests"
+    return (Test-FrontendChanges) -and (Test-Path $testDir)
+}
+
+function Test-VerifyComplete {
+    $testReport = "$FeatureDir/test-results/test-report.md"
+    if (Test-Path $testReport) {
+        return ((Select-String -Path $testReport -Pattern 'PASSED' -SimpleMatch) -ne $null)
+    }
+    return $false
+}
+
 function Test-PRCreated {
     $prState = gh pr view --json state 2>$null
     return $LASTEXITCODE -eq 0
@@ -155,6 +175,7 @@ function Get-CurrentPhase {
     $plan = (Select-String -Path $StatusFile -Pattern '\| Plan \|.*Complete').Count -gt 0
     $branch = (Select-String -Path $StatusFile -Pattern '\| Branch \|.*Complete').Count -gt 0
     $implement = (Select-String -Path $StatusFile -Pattern '\| Implement \|.*Complete').Count -gt 0
+    $verify = (Select-String -Path $StatusFile -Pattern '\| Verify \|.*Complete').Count -gt 0
     $pr = (Select-String -Path $StatusFile -Pattern '\| PR \|.*Complete').Count -gt 0
     $merge = (Select-String -Path $StatusFile -Pattern '\| Merge \|.*Complete').Count -gt 0
 
@@ -164,12 +185,17 @@ function Get-CurrentPhase {
     }
     elseif ($merge) { return "wrapup" }
     elseif ($pr) { return "merge" }
+    elseif ($verify) { return "pr" }
     elseif ($implement) {
-        if (Test-ImplementationComplete) { return "pr" }
+        if (Test-VerifyNeeded) { return "verify" }
+        elseif (Test-ImplementationComplete) { return "pr" }
         else { return "implement" }
     }
     elseif ($branch) {
-        if (Test-ImplementationComplete) { return "pr" }
+        if (Test-ImplementationComplete) {
+            if (Test-VerifyNeeded) { return "verify" }
+            else { return "pr" }
+        }
         else { return "implement" }
     }
     elseif ($plan) { return "branch" }
@@ -631,6 +657,103 @@ If some tasks done but more remain, emit: <phase>IMPLEMENT_PROGRESS</phase>
     }
 }
 
+function Invoke-Verify {
+    Write-Log "Executing Verify phase (Phase 5.5 - Browser Tests)..."
+
+    # Check if verify is needed
+    if (-not (Test-VerifyNeeded)) {
+        Write-Log "No frontend changes or test scripts found, skipping VERIFY"
+        # Mark as complete (skipped) in status
+        if (-not (Select-String -Path $StatusFile -Pattern '\| Verify \|' -SimpleMatch)) {
+            Add-Content -Path $StatusFile -Value "| Verify | ✅ Skipped | $(Get-Date -Format 'yyyy-MM-dd') | No frontend changes |"
+        }
+        return 0
+    }
+
+    # Check if already complete
+    if (Test-VerifyComplete) {
+        Write-Log "Verify already complete, skipping..."
+        return 0
+    }
+
+    Write-Log "Frontend changes detected, running browser tests..."
+
+    # Create test results directory
+    $testResultsDir = "$FeatureDir\test-results"
+    New-Item -ItemType Directory -Path "$testResultsDir\screenshots" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$testResultsDir\videos" -Force | Out-Null
+
+    # Load test configuration
+    $testConfig = "$FeatureDir\tests\test-config.json"
+    $baseUrl = "http://localhost:3000"
+    $testEmail = "feat-$($FeatureId.ToLower())-test@example.com"
+    $testPassword = "test-$FeatureId-password"
+
+    if (Test-Path $testConfig) {
+        Write-Log "Loading test configuration..."
+        $config = Get-Content $testConfig -Raw | ConvertFrom-Json
+        $baseUrl = $config.base_url
+        $testEmail = $config.test_user.email
+        $testPassword = $config.test_user.password
+    }
+
+    # Set environment variables for test scripts
+    $env:FEATURE_ID = $FeatureId
+    $env:BASE_URL = $baseUrl
+    $env:TEST_EMAIL = $testEmail
+    $env:TEST_PASSWORD = $testPassword
+    $env:SESSION = "ralph-$FeatureId"
+    $env:RESULTS_DIR = $testResultsDir
+
+    # Run E2E tests if script exists
+    $e2eScript = "$FeatureDir\tests\e2e-flow.sh"
+    if (Test-Path $e2eScript) {
+        Write-Log "Running E2E flow tests..."
+
+        $testResult = & bash $e2eScript
+        if ($LASTEXITCODE -ne 0) {
+            Write-Log "E2E tests failed" -Level ERROR
+
+            # Capture failure state
+            Write-Log "Capturing failure state..."
+            "Test failed on $(Get-Date)" | Set-Content "$testResultsDir\failure.txt"
+
+            # Run security filters
+            Write-Log "Running security filters on test results..."
+            & powershell -ExecutionPolicy Bypass -File .memory-system\scripts\security-filters.ps1 filter-all $testResultsDir
+
+            Add-SessionLog "VERIFY Failed ❌ - Tests failed, see test-results/"
+            return 1
+        }
+
+        Write-Log "E2E tests passed" -Level SUCCESS
+    }
+    else {
+        Write-Log "No e2e-flow.sh found, skipping E2E tests" -Level WARNING
+    }
+
+    # Run smoke tests if script exists (optional)
+    $smokeScript = "$FeatureDir\tests\e2e-smoke.sh"
+    if (Test-Path $smokeScript) {
+        Write-Log "Running smoke tests..."
+        & bash $smokeScript
+        if ($LASTEXITCODE -ne 0) {
+            Write-Log "Smoke tests failed (non-blocking)" -Level WARNING
+        }
+    }
+
+    # Run security filters on test results
+    Write-Log "Running security filters on test results..."
+    & powershell -ExecutionPolicy Bypass -File .memory-system\scripts\security-filters.ps1 filter-all $testResultsDir
+
+    # Update status
+    Add-Content -Path $StatusFile -Value "| Verify | ✅ Complete | $(Get-Date -Format 'yyyy-MM-dd') | Tests passed |"
+    Add-SessionLog "VERIFY Complete ✅ - Browser tests passed"
+
+    Write-Log "VERIFY phase complete" -Level SUCCESS
+    return 0
+}
+
 function Invoke-PR {
     Write-Log "Executing PR phase..."
 
@@ -727,10 +850,23 @@ function Invoke-PR {
 
     $prTitle = "${FeatureId}: " + ($FeatureId -replace 'FEAT-\d+-', '' -replace '-', ' ')
 
+    # Include test results if available
+    $testReport = "$FeatureDir\test-results\test-report.md"
+    $testResultsSection = ""
+    if (Test-Path $testReport) {
+        $testResultsSection = @"
+
+## Test Results
+
+$(Get-Content $testReport -Raw)
+"@
+    }
+
     $prBody = @"
 ## Summary
 
 Automated PR for $FeatureId
+$testResultsSection
 
 ## Checklist
 - [x] Implementation complete
@@ -872,6 +1008,7 @@ function Invoke-Phase {
         "plan" { return Invoke-Plan }
         "branch" { return Invoke-Branch }
         "implement" { return Invoke-Implement }
+        "verify" { return Invoke-Verify }
         "pr" { return Invoke-PR }
         "merge" { return Invoke-Merge }
         "wrapup" { return Invoke-Wrapup }

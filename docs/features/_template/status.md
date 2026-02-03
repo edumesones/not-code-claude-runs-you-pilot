@@ -15,11 +15,14 @@
 | Phase | Status | Date | Notes |
 |-------|--------|------|-------|
 | Interview | ⬜ Pending | - | - |
+| Critical Analysis | ⬜ Pending | - | - |
 | Plan | ⬜ Pending | - | - |
 | Branch | ⬜ Pending | - | - |
 | Implement | ⬜ Pending | - | - |
+| Verify | ⬜ Pending | - | Auto-skip if no frontend changes |
 | PR | ⬜ Pending | - | - |
 | Merge | ⬜ Pending | - | - |
+| Wrap-Up | ⬜ Pending | - | - |
 
 ---
 
