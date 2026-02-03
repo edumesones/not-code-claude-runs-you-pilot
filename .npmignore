@@ -48,3 +48,4 @@ docs/features/FEAT-*/
 
 # Git worktrees (generated at runtime)
 ../*-loop/
+package-lock.json
