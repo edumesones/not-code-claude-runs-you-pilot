@@ -1,0 +1,60 @@
+{
+  "name": "ralph-spec-agent-mem",
+  "version": "1.0.0",
+  "description": "Ralph Loop - Autonomous 9-phase feature development with spec-driven design, agent-browser E2E testing, and memory system",
+  "keywords": [
+    "ralph-loop",
+    "autonomous-development",
+    "spec-driven",
+    "agent-browser",
+    "memory-system",
+    "feature-development",
+    "claude-code",
+    "e2e-testing",
+    "methodology",
+    "workflow-automation"
+  ],
+  "homepage": "https://github.com/edumesones/not-code-claude-runs-you-pilot#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edumesones/not-code-claude-runs-you-pilot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/edumesones/not-code-claude-runs-you-pilot/issues"
+  },
+  "author": "Eduardo Mesones <edumesones@gmail.com>",
+  "license": "MIT",
+  "bin": {
+    "ralph-spec-agent-mem": "./bin/ralph-spec-agent-mem",
+    "ralph-loop": "./bin/ralph-spec-agent-mem"
+  },
+  "files": [
+    "bin/",
+    "install.sh",
+    "install.ps1",
+    "ralph-feature.sh",
+    "ralph-feature.ps1",
+    ".claude/",
+    ".memory-system/",
+    "docs/",
+    "CLAUDE.md",
+    "INSTALLATION.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\"",
+    "prepublishOnly": "echo 'Publishing ralph-spec-agent-mem...'",
+    "postinstall": "node bin/postinstall.js"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}

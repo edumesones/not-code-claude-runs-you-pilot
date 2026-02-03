@@ -1,0 +1,50 @@
+# Git
+.git/
+.gitignore
+.github/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Development
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.memory-system/test-data/
+.memory-system/sessions/
+docs/features/*/test-results/
+docs/features/*/context/session_log.md
+
+# Build
+node_modules/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Project-specific (don't publish runtime data)
+feature-loop-state.json
+activity.md
+ralph-*.log
+
+# Keep only template, not actual feature folders with data
+docs/features/FEAT-*/
+!docs/features/_template/
+!docs/features/_index.md
+
+# Git worktrees (generated at runtime)
+../*-loop/
