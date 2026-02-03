@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "memories": [],
+  "metadata": {
+    "total_memories": 0,
+    "last_consolidation": null,
+    "confidence_avg": 0,
+    "features_processed": [],
+    "schema_version": "1.0.0",
+    "created_at": "2025-02-02T19:30:00Z"
+  },
+  "config": {
+    "confidence_decay_enabled": false,
+    "confidence_decay_rate": 0.01,
+    "max_memories": 2000,
+    "deduplication_threshold": 0.8,
+    "secret_detection_enabled": true
+  }
+}
