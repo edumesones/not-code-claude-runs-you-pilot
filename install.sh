@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# Ralph Loop - Smart Installer
+# Feature Development Methodology - Smart Installer
 # Supports both global and project-level installation with intelligent merge
 ###############################################################################
 
@@ -19,7 +19,7 @@ echo -e "${CYAN}"
 cat << "EOF"
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║               RALPH LOOP METHODOLOGY                         ║
+║          FEATURE DEVELOPMENT METHODOLOGY                     ║
 ║            Smart Installer for Claude Code                   ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -60,13 +60,13 @@ merge_file() {
         echo -e "${YELLOW}  ⚠ $name already exists${NC}"
         echo -e "${BLUE}    Current: $dest${NC}"
 
-        if ask_yn "    Replace with Ralph Loop version?" "n"; then
+        if ask_yn "    Replace with new version?" "n"; then
             cp "$source" "$dest"
             echo -e "${GREEN}    ✓ Replaced${NC}"
         else
-            local backup="${dest}.ralph-backup"
+            local backup="${dest}.backup"
             cp "$source" "$backup"
-            echo -e "${GREEN}    ✓ Ralph Loop version saved as: $(basename "$backup")${NC}"
+            echo -e "${GREEN}    ✓ New version saved as: $(basename "$backup")${NC}"
             echo -e "${YELLOW}    ℹ You can manually merge later${NC}"
         fi
     else
@@ -100,13 +100,13 @@ merge_directory() {
             if ! diff -q "$file" "$dest_file" >/dev/null 2>&1; then
                 echo -e "${YELLOW}  ⚠ $label/$filename already exists and is different${NC}"
 
-                if ask_yn "    Replace with Ralph Loop version?" "n"; then
+                if ask_yn "    Replace with new version?" "n"; then
                     cp "$file" "$dest_file"
                     echo -e "${GREEN}    ✓ Replaced${NC}"
                     new_count=$((new_count + 1))
                 else
-                    cp "$file" "${dest_file}.ralph-backup"
-                    echo -e "${GREEN}    ✓ Saved as ${filename}.ralph-backup${NC}"
+                    cp "$file" "${dest_file}.backup"
+                    echo -e "${GREEN}    ✓ Saved as ${filename}.backup${NC}"
                     skip_count=$((skip_count + 1))
                 fi
             else
@@ -124,7 +124,7 @@ merge_directory() {
 }
 
 # Check prerequisites
-echo -e "${YELLOW}[1/7] Checking prerequisites...${NC}"
+echo -e "${YELLOW}[1/6] Checking prerequisites...${NC}"
 
 if ! command -v git &> /dev/null; then
     echo -e "${RED}❌ Git required${NC}"
@@ -138,7 +138,7 @@ command -v node &> /dev/null && echo -e "${GREEN}  ✓ Node.js${NC}" || echo -e 
 
 # Ask installation type
 echo ""
-echo -e "${YELLOW}[2/7] Choose installation type${NC}"
+echo -e "${YELLOW}[2/6] Choose installation type${NC}"
 echo ""
 echo -e "${MAGENTA}1) Global Installation${NC}"
 echo -e "   • Installs to ${GREEN}~/.claude/${NC}"
@@ -182,13 +182,12 @@ esac
 # Global installation
 if [ "$INSTALL_GLOBAL" = true ]; then
     echo ""
-    echo -e "${YELLOW}[3/7] Installing globally to ~/.claude/${NC}"
+    echo -e "${YELLOW}[3/6] Installing globally to ~/.claude/${NC}"
 
     CLAUDE_HOME="$HOME/.claude"
     mkdir -p "$CLAUDE_HOME"
     mkdir -p "$CLAUDE_HOME/commands"
     mkdir -p "$CLAUDE_HOME/skills"
-    mkdir -p "$CLAUDE_HOME/ralph-loop"
 
     # Backup existing CLAUDE.md
     if [ -f "$CLAUDE_HOME/CLAUDE.md" ]; then
@@ -214,15 +213,12 @@ if [ "$INSTALL_GLOBAL" = true ]; then
         merge_directory ".claude/skills" "$CLAUDE_HOME/skills" "skills"
     fi
 
-    # Copy scripts
+    # Copy memory system
     echo ""
-    echo -e "${BLUE}  Installing scripts...${NC}"
-    cp ralph-feature.sh "$CLAUDE_HOME/ralph-loop/"
-    cp ralph-feature.ps1 "$CLAUDE_HOME/ralph-loop/"
-    cp -r .memory-system "$CLAUDE_HOME/ralph-loop/" 2>/dev/null || true
-    cp -r docs "$CLAUDE_HOME/ralph-loop/" 2>/dev/null || true
-    chmod +x "$CLAUDE_HOME/ralph-loop/ralph-feature.sh"
-    echo -e "${GREEN}  ✓ Scripts installed${NC}"
+    echo -e "${BLUE}  Installing memory system...${NC}"
+    cp -r .memory-system "$CLAUDE_HOME/" 2>/dev/null || true
+    cp -r docs "$CLAUDE_HOME/" 2>/dev/null || true
+    echo -e "${GREEN}  ✓ Memory system installed${NC}"
 
     echo -e "${GREEN}✅ Global installation complete${NC}"
 fi
@@ -230,7 +226,7 @@ fi
 # Project installation
 if [ "$INSTALL_PROJECT" = true ]; then
     echo ""
-    echo -e "${YELLOW}[4/7] Installing to current project (./.claude/)${NC}"
+    echo -e "${YELLOW}[4/6] Installing to current project (./.claude/)${NC}"
 
     PROJECT_CLAUDE="./.claude"
     mkdir -p "$PROJECT_CLAUDE"
@@ -246,21 +242,20 @@ if [ "$INSTALL_PROJECT" = true ]; then
     if [ -f "CLAUDE.md" ]; then
         if [ -f "$PROJECT_CLAUDE/CLAUDE.md" ]; then
             echo -e "${YELLOW}  ⚠ Project already has CLAUDE.md${NC}"
-            if ask_yn "    Add Ralph Loop instructions to it?" "y"; then
+            if ask_yn "    Add methodology instructions to it?" "y"; then
                 cat >> "$PROJECT_CLAUDE/CLAUDE.md" << 'EOF'
 
-# Ralph Loop Methodology
+# Feature Development Methodology
 
-Ralph Loop is available in this project. See ~/.claude/ralph-loop/docs/ for documentation.
+9-phase feature development system available. See docs/feature_cycle.md for documentation.
 
 Quick commands:
-- /ralph FEAT-XXX - Start autonomous feature development
 - /interview FEAT-XXX - Interview phase
 - /think-critically FEAT-XXX - Critical analysis
 - /plan FEAT-XXX - Planning phase
 
 EOF
-                echo -e "${GREEN}    ✓ Appended Ralph Loop instructions${NC}"
+                echo -e "${GREEN}    ✓ Appended methodology instructions${NC}"
             fi
         else
             cp "CLAUDE.md" "$PROJECT_CLAUDE/CLAUDE.md"
@@ -281,13 +276,6 @@ EOF
         echo -e "${BLUE}  Installing skills...${NC}"
         merge_directory ".claude/skills" "$PROJECT_CLAUDE/skills" "skills"
     fi
-
-    # Copy scripts to project
-    echo ""
-    echo -e "${BLUE}  Installing scripts...${NC}"
-    cp ralph-feature.sh ./ 2>/dev/null || true
-    cp ralph-feature.ps1 ./ 2>/dev/null || true
-    chmod +x ralph-feature.sh 2>/dev/null || true
 
     # Copy .memory-system if not exists
     if [ ! -d ".memory-system" ]; then
@@ -310,39 +298,12 @@ EOF
     echo -e "${GREEN}✅ Project-level installation complete${NC}"
 fi
 
-# Setup PATH
-echo ""
-echo -e "${YELLOW}[5/7] Setting up PATH...${NC}"
-
-SHELL_RC=""
-if [ -n "$BASH_VERSION" ]; then
-    SHELL_RC="$HOME/.bashrc"
-elif [ -n "$ZSH_VERSION" ]; then
-    SHELL_RC="$HOME/.zshrc"
-fi
-
-if [ -n "$SHELL_RC" ] && [ "$INSTALL_GLOBAL" = true ]; then
-    if ! grep -q "ralph-loop" "$SHELL_RC" 2>/dev/null; then
-        echo "" >> "$SHELL_RC"
-        echo "# Ralph Loop Methodology" >> "$SHELL_RC"
-        echo "export PATH=\"\$HOME/.claude/ralph-loop:\$PATH\"" >> "$SHELL_RC"
-        echo -e "${GREEN}  ✓ Added to $SHELL_RC${NC}"
-        echo -e "${YELLOW}  ⚠ Run: source $SHELL_RC${NC}"
-    else
-        echo -e "${BLUE}  ℹ Already in PATH${NC}"
-    fi
-fi
-
 # Install git hooks (optional)
 echo ""
-echo -e "${YELLOW}[6/7] Git hooks (security filters)${NC}"
+echo -e "${YELLOW}[5/6] Git hooks (security filters)${NC}"
 
 if [ -d ".git" ] && ask_yn "Install security pre-commit hooks in this repo?" "y"; then
-    if [ "$INSTALL_GLOBAL" = true ]; then
-        bash "$HOME/.claude/ralph-loop/.memory-system/scripts/install-git-hooks.sh"
-    else
-        bash ".memory-system/scripts/install-git-hooks.sh"
-    fi
+    bash ".memory-system/scripts/install-git-hooks.sh"
     echo -e "${GREEN}  ✓ Git hooks installed${NC}"
 else
     echo -e "${BLUE}  ℹ Skipped git hooks${NC}"
@@ -350,7 +311,7 @@ fi
 
 # Summary
 echo ""
-echo -e "${YELLOW}[7/7] Installation summary${NC}"
+echo -e "${YELLOW}[6/6] Installation summary${NC}"
 echo ""
 
 if [ "$INSTALL_GLOBAL" = true ]; then
@@ -358,7 +319,6 @@ if [ "$INSTALL_GLOBAL" = true ]; then
     echo -e "   Location: ${CYAN}~/.claude/${NC}"
     echo -e "   • Commands: $(ls ~/.claude/commands 2>/dev/null | wc -l) installed"
     echo -e "   • Skills: $(ls ~/.claude/skills 2>/dev/null | wc -l) installed"
-    echo -e "   • Scripts: ${CYAN}~/.claude/ralph-loop/${NC}"
     echo ""
 fi
 
@@ -367,7 +327,6 @@ if [ "$INSTALL_PROJECT" = true ]; then
     echo -e "   Location: ${CYAN}./.claude/${NC}"
     echo -e "   • Commands: $(ls ./.claude/commands 2>/dev/null | wc -l) in project"
     echo -e "   • Skills: $(ls ./.claude/skills 2>/dev/null | wc -l) in project"
-    echo -e "   • Scripts: ${CYAN}./ralph-feature.sh${NC}"
     echo ""
 fi
 
@@ -384,39 +343,33 @@ if [ "$INSTALL_GLOBAL" = true ]; then
     echo -e "  ${GREEN}Global:${NC} Use in ANY project"
     echo -e "    1. cd any-project"
     echo -e "    2. claude code ."
-    echo -e "    3. Use commands: /ralph, /interview, etc."
+    echo -e "    3. Use commands: /interview, /think-critically, etc."
     echo ""
 fi
 
 if [ "$INSTALL_PROJECT" = true ]; then
     echo -e "  ${GREEN}Project:${NC} Use in THIS project"
     echo -e "    1. claude code ."
-    echo -e "    2. ./ralph-feature.sh FEAT-XXX"
+    echo -e "    2. Use commands: /interview, /think-critically, etc."
     echo ""
 fi
 
 echo -e "${BLUE}Available Commands:${NC}"
-echo -e "  • ${GREEN}/ralph FEAT-XXX${NC} - Start autonomous feature development"
 echo -e "  • ${GREEN}/interview FEAT-XXX${NC} - Interview phase"
 echo -e "  • ${GREEN}/think-critically FEAT-XXX${NC} - Critical analysis (11-step)"
 echo -e "  • ${GREEN}/plan FEAT-XXX${NC} - Planning phase"
+echo -e "  • ${GREEN}/git pr${NC} - Create pull request"
 echo ""
 
 echo -e "${BLUE}Documentation:${NC}"
-if [ "$INSTALL_GLOBAL" = true ]; then
-    echo -e "  • ${CYAN}~/.claude/ralph-loop/docs/feature_cycle.md${NC}"
-    echo -e "  • ${CYAN}~/.claude/ralph-loop/docs/ralph-feature-loop.md${NC}"
-fi
-if [ "$INSTALL_PROJECT" = true ]; then
-    echo -e "  • ${CYAN}./docs/feature_cycle.md${NC}"
-fi
+echo -e "  • ${CYAN}docs/feature_cycle.md${NC}"
 echo ""
 
 echo -e "${BLUE}What's Next?${NC}"
 echo -e "  1. Read quick start: ${GREEN}docs/feature_cycle.md${NC}"
 echo -e "  2. Create a feature: ${GREEN}mkdir -p docs/features/FEAT-001${NC}"
-echo -e "  3. Run Ralph Loop: ${GREEN}./ralph-feature.sh FEAT-001${NC}"
+echo -e "  3. Start interview: ${GREEN}/interview FEAT-001${NC}"
 echo ""
 
-echo -e "${MAGENTA}Happy coding with Ralph Loop! 🚀${NC}"
+echo -e "${MAGENTA}Happy coding! 🚀${NC}"
 echo ""

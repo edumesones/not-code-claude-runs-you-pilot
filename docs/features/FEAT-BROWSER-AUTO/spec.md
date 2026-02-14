@@ -1,7 +1,7 @@
 # Feature Specification: Browser Automation Integration
 
 **Feature ID:** FEAT-BROWSER-AUTO
-**Feature Name:** Agent-Browser Integration for Ralph Loop
+**Feature Name:** Agent-Browser Integration for the feature cycle
 **Priority:** P1 (Quality & Automation)
 **Created:** 2025-02-02
 **Status:** Planning
@@ -10,11 +10,11 @@
 
 ## Overview
 
-Integrate **agent-browser** (Anthropic's browser automation CLI) into Ralph Loop's 8-phase cycle to enable automatic frontend verification after implementation.
+Integrate **agent-browser** (Anthropic's browser automation CLI) into the feature cycle's 8-phase cycle to enable automatic frontend verification after implementation.
 
 ## Problem Statement
 
-Ralph Loop automates backend/logic implementation but has no automated frontend verification. Engineers must manually test UI changes, which:
+the feature cycle automates backend/logic implementation but has no automated frontend verification. Engineers must manually test UI changes, which:
 - Slows down the cycle (manual testing ~15-30 min per feature)
 - Introduces human error (missed edge cases)
 - No regression detection (old features break silently)
@@ -26,7 +26,7 @@ Add browser automation using **agent-browser** to:
 1. Automatically verify frontend changes after implementation
 2. Run regression tests on critical flows
 3. Generate screenshots/videos for PR review
-4. Enable fully autonomous Ralph Loop execution
+4. Enable fully autonomous the feature cycle execution
 
 ---
 
@@ -64,7 +64,7 @@ tests/e2e/agent-browser/
 
 ---
 
-## Integration Points in Ralph Loop
+## Integration Points in the feature cycle
 
 ### Current 8-Phase Cycle
 
@@ -119,7 +119,7 @@ tests/e2e/agent-browser/
 | 4 | Test Definition | How to define tests | Test scripts in feature docs | `docs/features/FEAT-XXX/tests/` |
 | 5 | Execution | How to run | Bash/PowerShell scripts | Follow top-people pattern |
 | 6 | Reporting | Test results format | Markdown + screenshots | Append to PR description |
-| 7 | Failure Handling | If tests fail | Pause Ralph Loop, notify | Don't auto-create PR |
+| 7 | Failure Handling | If tests fail | Pause the feature cycle, notify | Don't auto-create PR |
 | 8 | Parallel Execution | Run tests in parallel | Yes (per feature via sessions) | `--session FEAT-XXX` |
 | 9 | Video Recording | Record test execution | Optional (flag in config) | For debugging failures |
 | 10 | Regression Tests | Run on all features | Smoke tests only | Full tests only for current feature |
@@ -194,7 +194,7 @@ docs/features/FEAT-XXX/
 
 ---
 
-## Integration with ralph-feature.sh
+## Integration with the feature execution script
 
 ### New Phase: VERIFY
 
@@ -228,7 +228,7 @@ verify_frontend() {
   mkdir -p "docs/features/$FEATURE_ID/test-results/videos"
 
   # Run E2E tests
-  local SESSION="ralph-$FEATURE_ID"
+  local SESSION="test-$FEATURE_ID"
 
   echo "  Running E2E flow tests..."
   if bash "docs/features/$FEATURE_ID/tests/e2e-flow.sh" --session "$SESSION"; then
@@ -336,7 +336,7 @@ FEATURE_ID="FEAT-XXX"
 BASE_URL="${BASE_URL:-http://localhost:3000}"
 TEST_EMAIL="${TEST_EMAIL:-test@example.com}"
 TEST_PASSWORD="${TEST_PASSWORD:-testpassword123}"
-SESSION="${SESSION:-ralph-$FEATURE_ID}"
+SESSION="${SESSION:-test-$FEATURE_ID}"
 
 # Helper functions
 source "$(dirname "$0")/helpers.sh"
@@ -408,7 +408,7 @@ main "$@"
 
 ## Benefits
 
-### For Ralph Loop
+### For the feature cycle
 1. **Autonomous QA** - Can verify frontend changes without human
 2. **Regression Detection** - Catches UI breaks early
 3. **PR Evidence** - Screenshots in PR show what changed
@@ -433,7 +433,7 @@ main "$@"
 
 - ✅ agent-browser installed and configured
 - ✅ Test template scripts created
-- ✅ VERIFY phase integrated into ralph-feature.sh
+- ✅ VERIFY phase integrated into the feature execution script
 - ✅ Test results appear in PR descriptions
 - ✅ Failed tests prevent PR creation
 - ✅ Screenshots captured automatically
@@ -478,9 +478,9 @@ main "$@"
 
 1. **Install agent-browser** in development environment
 2. **Create test template** based on top-people pattern
-3. **Implement VERIFY phase** in ralph-feature.sh
+3. **Implement VERIFY phase** in the feature execution script
 4. **Test with FEAT-023** (existing e2e tests from top-people)
-5. **Document** usage in Ralph Loop guide
+5. **Document** usage in the feature cycle guide
 6. **Iterate** based on real usage
 
 ---

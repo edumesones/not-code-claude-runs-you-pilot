@@ -29,7 +29,7 @@ FEATURE_ID="${FEATURE_ID:-FEAT-XXX}"
 BASE_URL="${BASE_URL:-http://localhost:3000}"
 TEST_EMAIL="${TEST_EMAIL:-feat-xxx-test@example.com}"
 TEST_PASSWORD="${TEST_PASSWORD:-test-feat-xxx-password}"
-SESSION="${SESSION:-ralph-$FEATURE_ID}"
+SESSION="${SESSION:-test-$FEATURE_ID}"
 RESULTS_DIR="$SCRIPT_DIR/../test-results"
 
 ###############################################################################

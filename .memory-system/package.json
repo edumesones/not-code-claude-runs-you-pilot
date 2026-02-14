@@ -1,7 +1,7 @@
 {
-  "name": "ralph-loop-memory-system",
+  "name": "feature-dev-memory-system",
   "version": "1.0.0",
-  "description": "Memory system and browser automation for Ralph Loop methodology",
+  "description": "Memory system and browser automation for feature development methodology",
   "private": true,
   "engines": {
     "node": ">=18.0.0"
@@ -24,7 +24,7 @@
     "url": "https://github.com/edumesones/not-code-claude-runs-you-pilot"
   },
   "keywords": [
-    "ralph-loop",
+    "feature-development",
     "memory-mcp",
     "agent-browser",
     "automation",

@@ -13,7 +13,7 @@
 - ✅ `spec.md` - Feature specification
 - ✅ `top-people/tests/e2e/agent-browser/` - Reference implementation
 - ✅ `top-people/tests/e2e/conftest.py` - Test patterns
-- ✅ Ralph Loop documentation - 8-phase cycle
+- ✅ the feature cycle documentation - 8-phase cycle
 
 ### Analysis Depth: FULL (All 11 Steps)
 
@@ -32,12 +32,12 @@
 
 ### Problem Statement
 
-**Ralph Loop automates code implementation but lacks automated frontend verification, requiring manual QA that blocks autonomous execution and introduces 15-30 minutes of delay per feature.**
+**the feature cycle automates code implementation but lacks automated frontend verification, requiring manual QA that blocks autonomous execution and introduces 15-30 minutes of delay per feature.**
 
 ### Hard Constraints
 
 1. **Technical:**
-   - Must work with existing Ralph Loop (8-phase cycle)
+   - Must work with existing the feature cycle (8-phase cycle)
    - agent-browser v0.8.4 already installed (confirmed)
    - Must support both Bash (Linux/Mac) and PowerShell (Windows)
    - Cannot break existing phases (backward compatible)
@@ -56,10 +56,10 @@
    - Parallel test sessions must not conflict
 
 4. **Integration:**
-   - Must integrate with ralph-feature.sh/ps1
+   - Must integrate with the feature execution script/ps1
    - Test results must append to PR description
    - Failure logs must be git-committable
-   - Must preserve Ralph Loop's atomic phase model
+   - Must preserve the feature cycle's atomic phase model
 
 ### Soft Constraints (Preferences)
 
@@ -173,11 +173,11 @@
 - Can skip gracefully for backend-only features
 - Better error reporting (VERIFY failure != IMPLEMENT failure)
 - Parallel execution possible (different worktrees)
-- Aligns with Ralph Loop's phase model
+- Aligns with the feature cycle's phase model
 
 **Cons:**
 - Increases cycle length by 1 phase
-- More complexity in ralph-feature.sh
+- More complexity in the feature execution script
 - Need to handle skipping logic
 
 **Best when:** Frontend features, autonomous execution
@@ -213,17 +213,17 @@
 
 ### Approach C: Post-PR Testing (External CI)
 
-**Core idea:** Don't integrate into Ralph Loop, run tests in CI after PR creation.
+**Core idea:** Don't integrate into the feature cycle, run tests in CI after PR creation.
 
 **Pros:**
-- Zero Ralph Loop changes
+- Zero the feature cycle changes
 - Leverage existing CI infrastructure
 - Standard industry pattern
 
 **Cons:**
 - Tests run AFTER PR (too late, PRs already created)
 - Can't block PR creation on test failure
-- Doesn't enable autonomous Ralph Loop
+- Doesn't enable autonomous the feature cycle
 - Engineers see failures later (slower feedback)
 
 **Best when:** Large teams with CI pipelines
@@ -263,7 +263,7 @@
 **Approach A (New Phase 5.5 VERIFY)** with **Approach D (Playwright MCP) as fallback**.
 
 **Rationale:**
-- Approach A aligns with Ralph Loop's philosophy (atomic phases)
+- Approach A aligns with the feature cycle's philosophy (atomic phases)
 - agent-browser already installed and proven (top-people)
 - CLI-based = easy integration with bash/powershell
 - Element refs make tests more robust than CSS selectors
@@ -289,7 +289,7 @@
 - Error handling: VERIFY failure distinct from IMPLEMENT failure
 
 **Implications:**
-- Ralph Loop now has 9 phases (was 8)
+- the feature cycle now has 9 phases (was 8)
 - Documentation must update phase numbering
 - Scripts need new phase detection logic
 
@@ -351,7 +351,7 @@
 
 **Rationale:**
 - Quality gate (prevents broken UI from reaching PR)
-- Autonomous Ralph Loop must not create bad PRs
+- Autonomous the feature cycle must not create bad PRs
 - Forces test fixes immediately
 
 **Implications:**
@@ -407,7 +407,7 @@
    - **Enforcement:** Separate git commits, different error codes
 
 2. **Session Uniqueness:** Each feature has unique agent-browser session
-   - **Enforcement:** Session ID = "ralph-FEAT-XXX"
+   - **Enforcement:** Session ID = "test-FEAT-XXX"
 
 3. **Screenshot Atomicity:** Screenshots captured or test retried
    - **Enforcement:** Try/catch around agent-browser commands
@@ -479,11 +479,11 @@
 
 ### Manual Controls
 
-- **Skip VERIFY phase:** `SKIP_VERIFY=true bash ralph-feature.sh FEAT-XXX`
-- **Force PR creation:** `FORCE_PR=true bash ralph-feature.sh FEAT-XXX`
+- **Skip VERIFY phase:** `SKIP_VERIFY=true bash the feature execution script FEAT-XXX`
+- **Force PR creation:** `FORCE_PR=true bash the feature execution script FEAT-XXX`
 - **Increase timeout:** Edit `test-config.json` → `timeout: 300000`
 - **Enable video:** Edit `test-config.json` → `record_video: true`
-- **Disable auto-detect:** `MANUAL_VERIFY=true bash ralph-feature.sh FEAT-XXX`
+- **Disable auto-detect:** `MANUAL_VERIFY=true bash the feature execution script FEAT-XXX`
 
 ---
 
@@ -493,7 +493,7 @@
 
 | Decision | Reversibility | Cost to Reverse | Time to Reverse |
 |----------|---------------|-----------------|-----------------|
-| **Add Phase 5.5** | Medium | Modify ralph scripts | 2-4 hours |
+| **Add Phase 5.5** | Medium | Modify feature scripts | 2-4 hours |
 | **Use agent-browser** | Easy | Switch to Playwright | 1 week (rewrite tests) |
 | **Auto-detect frontend** | Easy | Add manual flag | 30 minutes |
 | **Block PR on failure** | Easy | Change to warning | 10 minutes |
@@ -553,7 +553,7 @@
 
 🟡 **Maybe.**
 - **Concern:** Adding a whole phase for something that could be a GitHub Action
-- **Counter:** Autonomous Ralph Loop requires inline verification, not post-PR
+- **Counter:** Autonomous the feature cycle requires inline verification, not post-PR
 - **Simpler alternative:** Run tests in CI, accept PRs-then-fix workflow
 - **Recommendation:** Pilot with 3 features, measure time savings vs complexity
 
@@ -612,7 +612,7 @@
 1. Developer updates system packages (npm update -g)
 2. agent-browser updates to v0.9.0 with breaking changes
 3. All VERIFY phases fail with "unknown command"
-4. Ralph Loop blocks all PRs
+4. the feature cycle blocks all PRs
 5. Team can't ship anything
 
 **Blast radius:** All developers blocked, zero frontend velocity
@@ -703,7 +703,7 @@
 
 ## Step 10: AI Delegation Matrix
 
-### Safe for Full AI Automation (Ralph Loop)
+### Safe for Full AI Automation (the feature cycle)
 
 ✅ **Auto-detect frontend changes**
 - **Why safe:** File extension check is deterministic
@@ -768,7 +768,7 @@
 
 **Approach A (New Phase 5.5 VERIFY) with critical security enhancements:**
 
-1. **Week 1:** Implement Phase 5.5 (VERIFY) in ralph-feature.sh
+1. **Week 1:** Implement Phase 5.5 (VERIFY) in the feature execution script
    - Auto-detect frontend changes
    - Run agent-browser test scripts
    - Capture screenshots (on failure only initially)
@@ -791,7 +791,7 @@
    - If issues: Pivot to Approach D (Playwright MCP)
 
 **Rationale:**
-- Aligns with Ralph Loop's atomic phase model
+- Aligns with the feature cycle's atomic phase model
 - Leverages proven top-people pattern
 - agent-browser already installed (v0.8.4)
 - Can skip gracefully for backend features
@@ -814,7 +814,7 @@
 ### Short-term Goals (This Implementation)
 
 **Phase 1 (Week 1) - Core Integration:**
-1. ✅ Add Phase 5.5 (VERIFY) to ralph-feature.sh
+1. ✅ Add Phase 5.5 (VERIFY) to the feature execution script
 2. ✅ Auto-detect frontend changes (tsx/jsx/css)
 3. ✅ Run test scripts from docs/features/FEAT-XXX/tests/
 4. ✅ Capture screenshots on failure
@@ -928,7 +928,7 @@
 **IF VALIDATED (Week 1-2):**
 
 4. ✅ **Implement Phase 5.5 (VERIFY)**
-   - Modify ralph-feature.sh/ps1
+   - Modify the feature execution script/ps1
    - Auto-detect frontend changes
    - Run test scripts
    - Block PR on failure
@@ -962,9 +962,9 @@
 
 ---
 
-## Appendix: Pause Conditions for Ralph Loop
+## Appendix: Pause Conditions for the feature cycle
 
-If executing this as **Phase 2 (Think Critically)** in autonomous Ralph Loop:
+If executing this as **Phase 2 (Think Critically)** in autonomous the feature cycle:
 
 ### 🔴 PAUSE CONDITIONS (require human intervention):
 

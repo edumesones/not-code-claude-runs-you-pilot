@@ -50,7 +50,7 @@ From FEAT-BROWSER-AUTO analysis, the following 5 critical issues are mitigated:
 
 **Mitigations:**
 - **Per-feature test users** (feat-xxx-test@example.com)
-- **Isolated sessions** (ralph-FEAT-XXX)
+- **Isolated sessions** (test-FEAT-XXX)
 - **Test configuration schema** with auto-create/cleanup
 - **Database snapshot support** (optional)
 
@@ -417,7 +417,7 @@ Before committing test results:
 - ✅ `.memory-system/docs/security-mitigations.md` (This document)
 
 **Next Phase:**
-Proceed to Phase 5.5 (VERIFY) implementation in ralph-feature.sh after security audit passes.
+Proceed to Phase 5.5 (VERIFY) implementation after security audit passes.
 
 ---
 

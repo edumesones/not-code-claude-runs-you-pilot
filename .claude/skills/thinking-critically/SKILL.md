@@ -155,7 +155,7 @@ Execute ALL steps in order. Do not skip steps unless explicitly told to or abbre
 - [ ] [Low confidence + High impact assumption]
 ```
 
-**CRITICAL RULE:** If any assumption has **Low confidence** AND **High impact** → **STOP**. In Ralph Loop, emit `<phase>ANALYSIS_PAUSE</phase>`. In manual mode, ask user to validate before proceeding.
+**CRITICAL RULE:** If any assumption has **Low confidence** AND **High impact** → **STOP**. In autonomous mode, emit `<phase>ANALYSIS_PAUSE</phase>`. In manual mode, ask user to validate before proceeding.
 
 ---
 
@@ -405,19 +405,19 @@ Adopt the persona of a paranoid, experienced staff engineer who has seen project
 - [Critical red flag if any]
 ```
 
-**CRITICAL RULE:** If a critical red flag is found → in Ralph Loop, emit `<phase>ANALYSIS_PAUSE</phase>`. In manual mode, warn user explicitly.
+**CRITICAL RULE:** If a critical red flag is found → in autonomous mode, emit `<phase>ANALYSIS_PAUSE</phase>`. In manual mode, warn user explicitly.
 
 ---
 
 ### Step 10: AI Delegation Assessment
 
-**Goal:** Determine what AI (Ralph Loop) can safely handle vs what needs human oversight.
+**Goal:** Determine what AI can safely handle vs what needs human oversight.
 
 **Output format:**
 ```markdown
 ## 10. AI Delegation Matrix
 
-### Safe for Full AI Automation (Ralph Loop)
+### Safe for Full AI Automation
 - [Task]: [Why safe]
 
 ### AI with Human Review
@@ -491,7 +491,7 @@ Adopt the persona of a paranoid, experienced staff engineer who has seen project
 2. [Follow-up action]
 ```
 
-**CRITICAL RULE:** If Confidence Level is **"Low"** → in Ralph Loop, emit `<phase>ANALYSIS_PAUSE</phase>`. Cannot proceed to Plan without human validation.
+**CRITICAL RULE:** If Confidence Level is **"Low"** → in autonomous mode, emit `<phase>ANALYSIS_PAUSE</phase>`. Cannot proceed to Plan without human validation.
 
 ---
 
@@ -523,13 +523,13 @@ Adopt the persona of a paranoid, experienced staff engineer who has seen project
 
 ---
 
-## Ralph Loop Integration
+## Autonomous Integration
 
-### As Iteration 2 in Autonomous Loop
+### As Phase 2 in Feature Cycle
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Ralph Loop Iteration 2: THINK CRITICALLY                                    │
+│  Phase 2: THINK CRITICALLY                                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  INPUT:                                                                      │
@@ -567,7 +567,7 @@ Plan phase (Iteration 3) reads `analysis.md` **in addition to** `spec.md` to:
 | Recommended approach (Step 11) | Selects architecture pattern for design.md |
 | Failure mitigations (Step 5) | Adds error handling tasks to tasks.md |
 | Invariants/boundaries (Step 6) | Becomes validation rules in implementation |
-| AI delegation matrix (Step 10) | Decides Ralph automation scope per task |
+| AI delegation matrix (Step 10) | Decides AI automation scope per task |
 | Observability requirements (Step 7) | Adds monitoring tasks to tasks.md |
 | Trade-off positions (Step 4) | Guides technical choices in design.md |
 
@@ -654,6 +654,6 @@ Next step:
 | `spec-architect` | Think Critically validates spec output |
 | `implementation-planner` | Reads analysis.md to inform design.md |
 | `saas-validator` | Market validation feeds into Step 2 assumptions |
-| `ralph-loop` | Think Critically is autonomous Iteration 2 with conditional pause |
+| `feature-cycle` | Think Critically is Phase 2 with conditional pause |
 | `architecture-designer` | Run Think Critically for each major ADR |
 | `status-reporter` | Updates all status files after completion |

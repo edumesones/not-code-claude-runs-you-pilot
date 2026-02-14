@@ -8,7 +8,7 @@
 
 ## Overview
 
-Successfully integrated agent-browser (Anthropic CLI) into Ralph Loop's 8-phase cycle as **Phase 5.5 (VERIFY)** - automatic frontend verification after implementation.
+Successfully integrated agent-browser (Anthropic CLI) into the feature cycle's 8-phase cycle as **Phase 5.5 (VERIFY)** - automatic frontend verification after implementation.
 
 ---
 
@@ -165,10 +165,10 @@ main() {
 }
 ```
 
-#### 2. Ralph Loop Integration (Bash)
+#### 2. the feature cycle Integration (Bash)
 
 **File Created:**
-- `ralph-feature.sh` (NEW - full bash version with Phase 5.5)
+- `feature-cycle script` (NEW - full bash version with Phase 5.5)
 
 **Key Functions:**
 ```bash
@@ -198,10 +198,10 @@ invoke_verify() {
 6. PR           → gh pr create (with test results)
 ```
 
-#### 3. Ralph Loop Integration (PowerShell)
+#### 3. the feature cycle Integration (PowerShell)
 
 **File Updated:**
-- `ralph-feature.ps1` (added Phase 5.5)
+- `feature-cycle script (PowerShell)` (added Phase 5.5)
 
 **Added Functions:**
 ```powershell
@@ -224,8 +224,8 @@ Invoke-PR()           # Include test results in PR body
 
 ```
 not-code-claude-runs-you-pilot/
-├── ralph-feature.sh                         # NEW - Bash with Phase 5.5
-├── ralph-feature.ps1                        # UPDATED - PowerShell with Phase 5.5
+├── feature-cycle script                         # NEW - Bash with Phase 5.5
+├── feature-cycle script (PowerShell)                        # UPDATED - PowerShell with Phase 5.5
 ├── .memory-system/
 │   ├── package.json                         # Version lock
 │   ├── scripts/
@@ -279,18 +279,18 @@ vim docs/features/FEAT-XXX/tests/e2e-flow.sh
 # - Form selectors and field names
 ```
 
-**3. Run Ralph Loop:**
+**3. Run the feature cycle:**
 ```bash
 # Bash
-./ralph-feature.sh FEAT-XXX
+./feature-cycle script FEAT-XXX
 
 # PowerShell
-.\ralph-feature.ps1 FEAT-XXX
+.\feature-cycle script (PowerShell) FEAT-XXX
 ```
 
 **4. Automatic Phase 5.5 Execution:**
 
-When Ralph Loop detects:
+When the feature cycle detects:
 - ✅ Frontend files changed (tsx/jsx/css)
 - ✅ Test scripts exist in docs/features/FEAT-XXX/tests/
 
@@ -405,8 +405,8 @@ Found secrets in 1 files
 mkdir -p docs/features/FEAT-TEST/tests
 cp -r docs/features/_template/tests/* docs/features/FEAT-TEST/tests/
 
-# Run Ralph Loop
-./ralph-feature.sh FEAT-TEST
+# Run the feature cycle
+./feature-cycle script FEAT-TEST
 
 # When Phase 5.5 runs:
 [FEAT-TEST] 12:34:56 [INFO] Executing Verify phase (Phase 5.5)
@@ -428,8 +428,8 @@ cp -r docs/features/_template/tests/* docs/features/FEAT-TEST/tests/
 - ✅ Cross-platform (Bash + PowerShell)
 
 ### Phase 2 (Integration)
-- ✅ Phase 5.5 integrated in ralph-feature.sh
-- ✅ Phase 5.5 integrated in ralph-feature.ps1
+- ✅ Phase 5.5 integrated in feature-cycle script
+- ✅ Phase 5.5 integrated in feature-cycle script (PowerShell)
 - ✅ Test templates created (helpers, e2e-flow, e2e-smoke)
 - ✅ Auto-detection of frontend changes
 - ✅ Security filters run automatically
@@ -488,7 +488,7 @@ cp -r docs/features/_template/tests/* docs/features/FEAT-TEST/tests/
 **What Was Built:**
 - 🔒 **Security Layer**: 9 files for secret detection, filtering, and pre-commit hooks
 - 🧪 **Test Templates**: 4 files for E2E testing (helpers, flow, smoke, config)
-- 🔄 **Ralph Loop Integration**: Phase 5.5 (VERIFY) in both bash and PowerShell
+- 🔄 **the feature cycle Integration**: Phase 5.5 (VERIFY) in both bash and PowerShell
 - 📚 **Documentation**: 4 comprehensive guides (security, isolation, spec, analysis)
 
 **Total Files Created/Updated:** 18 files
@@ -498,7 +498,7 @@ cp -r docs/features/_template/tests/* docs/features/FEAT-TEST/tests/
 Users can now:
 1. Copy test templates to their features
 2. Customize E2E tests for their UI
-3. Run Ralph Loop - Phase 5.5 executes automatically
+3. Run the feature cycle - Phase 5.5 executes automatically
 4. Get screenshots + test reports in PR
 5. Secrets are filtered before git commit
 

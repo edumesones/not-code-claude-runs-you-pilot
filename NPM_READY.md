@@ -14,11 +14,8 @@
 ### Executables
 - ✅ `bin/ralph-spec-agent-mem` - Main CLI installer
 - ✅ `bin/postinstall.js` - Post-install welcome message
-- ✅ Alias: `ralph-loop` → `ralph-spec-agent-mem`
-
 ### Methodology Files
 - ✅ `install.sh` + `install.ps1` - Interactive installers
-- ✅ `ralph-feature.sh` + `ralph-feature.ps1` - Loop runners
 - ✅ `.claude/` - Commands and skills
 - ✅ `.memory-system/` - Security filters and git hooks
 - ✅ `docs/` - Complete documentation
@@ -28,7 +25,6 @@
 - ✅ `INSTALLATION.md` - Installation instructions
 - ✅ `PUBLISHING.md` - Publishing guide
 - ✅ `docs/feature_cycle.md` - 9-phase cycle
-- ✅ `docs/ralph-feature-loop.md` - Loop documentation
 
 ## Verification
 
@@ -43,8 +39,7 @@ $ npm pack --dry-run
 ### Bin Configuration
 ```json
 {
-  "ralph-spec-agent-mem": "./bin/ralph-spec-agent-mem",
-  "ralph-loop": "./bin/ralph-spec-agent-mem"
+  "ralph-spec-agent-mem": "./bin/ralph-spec-agent-mem"
 }
 ```
 
@@ -70,7 +65,6 @@ npx ralph-spec-agent-mem
 ralph-spec-agent-mem              # Interactive installer
 ralph-spec-agent-mem --help       # Show help
 ralph-spec-agent-mem --version    # Show version
-ralph-loop                        # Alias
 ```
 
 ## Next Steps
@@ -131,8 +125,6 @@ After publication, users can install via:
 
 ## Keywords
 
-- ralph-loop
-- autonomous-development
 - spec-driven
 - agent-browser
 - memory-system

@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
-# Ralph Loop - Global Installation Script
-# Installs Ralph Loop methodology globally in ~/.claude/
+# Feature Development Methodology - Global Installation Script
+# Installs methodology globally in ~/.claude/
 ###############################################################################
 
 set -e
@@ -18,7 +18,7 @@ echo -e "${CYAN}"
 cat << "EOF"
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║               RALPH LOOP METHODOLOGY                         ║
+║          FEATURE DEVELOPMENT METHODOLOGY                     ║
 ║         Global Installation for Claude Code                  ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -26,7 +26,7 @@ EOF
 echo -e "${NC}"
 
 echo ""
-echo -e "${BLUE}This will install Ralph Loop globally in ~/.claude/${NC}"
+echo -e "${BLUE}This will install the methodology globally in ~/.claude/${NC}"
 echo -e "${BLUE}Available in ANY project you open with Claude Code${NC}"
 echo ""
 
@@ -65,7 +65,6 @@ CLAUDE_HOME="$HOME/.claude"
 mkdir -p "$CLAUDE_HOME"
 mkdir -p "$CLAUDE_HOME/commands"
 mkdir -p "$CLAUDE_HOME/skills"
-mkdir -p "$CLAUDE_HOME/ralph-loop"
 
 echo -e "${GREEN}  ✓ Directories created${NC}"
 
@@ -83,7 +82,7 @@ fi
 
 # Copy global CLAUDE.md
 echo ""
-echo -e "${YELLOW}[4/6] Installing global Ralph Loop instructions...${NC}"
+echo -e "${YELLOW}[4/6] Installing global methodology instructions...${NC}"
 
 cp CLAUDE.md "$CLAUDE_HOME/CLAUDE.md"
 echo -e "${GREEN}  ✓ CLAUDE.md installed${NC}"
@@ -100,43 +99,18 @@ if [ -d ".claude/skills" ]; then
     echo -e "${GREEN}  ✓ Skills installed${NC}"
 fi
 
-# Copy scripts to ~/.claude/ralph-loop/
+# Copy memory system and docs
 echo ""
-echo -e "${YELLOW}[5/6] Installing Ralph Loop scripts...${NC}"
+echo -e "${YELLOW}[5/6] Installing memory system and docs...${NC}"
 
-cp ralph-feature.sh "$CLAUDE_HOME/ralph-loop/"
-cp ralph-feature.ps1 "$CLAUDE_HOME/ralph-loop/"
-cp -r .memory-system "$CLAUDE_HOME/ralph-loop/" 2>/dev/null || true
-cp -r docs "$CLAUDE_HOME/ralph-loop/" 2>/dev/null || true
+cp -r .memory-system "$CLAUDE_HOME/" 2>/dev/null || true
+cp -r docs "$CLAUDE_HOME/" 2>/dev/null || true
 
-chmod +x "$CLAUDE_HOME/ralph-loop/ralph-feature.sh"
+echo -e "${GREEN}  ✓ Memory system and docs installed${NC}"
 
-echo -e "${GREEN}  ✓ Scripts installed in ~/.claude/ralph-loop/${NC}"
-
-# Add to PATH (optional)
+# Setup complete
 echo ""
-echo -e "${YELLOW}[6/6] Setting up PATH...${NC}"
-
-# Detect shell
-SHELL_RC=""
-if [ -n "$BASH_VERSION" ]; then
-    SHELL_RC="$HOME/.bashrc"
-elif [ -n "$ZSH_VERSION" ]; then
-    SHELL_RC="$HOME/.zshrc"
-fi
-
-if [ -n "$SHELL_RC" ]; then
-    # Check if already in PATH
-    if ! grep -q "ralph-loop" "$SHELL_RC" 2>/dev/null; then
-        echo "" >> "$SHELL_RC"
-        echo "# Ralph Loop Methodology" >> "$SHELL_RC"
-        echo "export PATH=\"\$HOME/.claude/ralph-loop:\$PATH\"" >> "$SHELL_RC"
-        echo -e "${GREEN}  ✓ Added to $SHELL_RC${NC}"
-        echo -e "${YELLOW}  ⚠ Run: source $SHELL_RC${NC}"
-    else
-        echo -e "${BLUE}  ℹ Already in PATH${NC}"
-    fi
-fi
+echo -e "${YELLOW}[6/6] Setup complete${NC}"
 
 # Installation complete
 echo ""
@@ -146,28 +120,22 @@ echo -e "${GREEN}║            ✅ INSTALLATION COMPLETE!                      
 echo -e "${GREEN}║                                                              ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${CYAN}Ralph Loop is now available GLOBALLY in Claude Code!${NC}"
+echo -e "${CYAN}Methodology is now available GLOBALLY in Claude Code!${NC}"
 echo ""
 echo -e "${BLUE}Usage:${NC}"
 echo -e "  1. Open ANY project in Claude Code"
-echo -e "  2. Use commands: ${GREEN}/ralph${NC}, ${GREEN}/interview${NC}, ${GREEN}/think-critically${NC}"
-echo -e "  3. Or run directly: ${GREEN}ralph-feature.sh FEAT-XXX${NC}"
+echo -e "  2. Use commands: ${GREEN}/interview${NC}, ${GREEN}/think-critically${NC}"
 echo ""
 echo -e "${BLUE}What was installed:${NC}"
 echo -e "  • ${GREEN}~/.claude/CLAUDE.md${NC} - Global instructions"
 echo -e "  • ${GREEN}~/.claude/commands/${NC} - Custom commands"
 echo -e "  • ${GREEN}~/.claude/skills/${NC} - Custom skills"
-echo -e "  • ${GREEN}~/.claude/ralph-loop/${NC} - Scripts & docs"
 echo ""
 echo -e "${BLUE}Next steps:${NC}"
 echo -e "  1. ${GREEN}cd your-project${NC}"
 echo -e "  2. ${GREEN}claude code .${NC}"
-echo -e "  3. Use Ralph Loop commands!"
+echo -e "  3. Use methodology commands!"
 echo ""
 echo -e "${BLUE}Documentation:${NC}"
-echo -e "  • Quick start: ${GREEN}~/.claude/ralph-loop/docs/feature_cycle.md${NC}"
-echo -e "  • Full guide: ${GREEN}~/.claude/ralph-loop/docs/ralph-feature-loop.md${NC}"
-echo ""
-echo -e "${BLUE}Uninstall:${NC}"
-echo -e "  ${GREEN}bash ~/.claude/ralph-loop/uninstall.sh${NC}"
+echo -e "  • Quick start: ${GREEN}docs/feature_cycle.md${NC}"
 echo ""

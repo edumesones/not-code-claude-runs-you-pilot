@@ -1,13 +1,13 @@
 # ralph-spec-agent-mem
 
-> **Autonomous 9-phase feature development with spec-driven design, agent-browser E2E testing, and memory system**
+> **Spec-driven 9-phase feature development with agent-browser E2E testing and memory system**
 
 [![npm version](https://img.shields.io/npm/v/ralph-spec-agent-mem.svg)](https://www.npmjs.com/package/ralph-spec-agent-mem)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## What is Ralph Loop?
+## What is this?
 
-Ralph Loop is an **autonomous feature development methodology** that executes the complete lifecycle from specification to production merge with minimal human intervention.
+A **feature development methodology** that executes the complete lifecycle from specification to production merge using a structured 9-phase cycle.
 
 ### The 9-Phase Cycle
 
@@ -15,9 +15,9 @@ Ralph Loop is an **autonomous feature development methodology** that executes th
 1. INTERVIEW        → Capture technical decisions (spec.md)
 2. THINK CRITICALLY → 11-step pre-implementation analysis (analysis.md)
 3. PLAN             → Design architecture + tasks (design.md, tasks.md)
-4. BRANCH           → Create isolated git worktree
+4. BRANCH           → Create isolated git branch
 5. IMPLEMENT        → Execute tasks with atomic commits
-5.5 VERIFY          → Browser automation tests (agent-browser E2E) ✨ NEW
+5.5 VERIFY          → Browser automation tests (agent-browser E2E)
 6. PR               → Auto-sync, auto-resolve conflicts, create PR
 7. MERGE            → Human approval → Production
 8. WRAP-UP          → Capture learnings (wrap_up.md)
@@ -25,12 +25,11 @@ Ralph Loop is an **autonomous feature development methodology** that executes th
 
 ### Key Features
 
-- ✅ **Spec-Driven**: Every feature starts with a complete specification
-- 🤖 **Agent Automation**: Browser E2E tests with Anthropic's agent-browser
-- 🧠 **Memory System**: Context preservation across development cycles
-- 🔒 **Security Filters**: Automatic secret detection and filtering
-- 🔄 **Git Worktrees**: Isolated parallel feature development
-- 📊 **Progress Tracking**: Real-time status and session logs
+- **Spec-Driven**: Every feature starts with a complete specification
+- **Agent Automation**: Browser E2E tests with Anthropic's agent-browser
+- **Memory System**: Context preservation across development cycles
+- **Security Filters**: Automatic secret detection and filtering
+- **Progress Tracking**: Real-time status and session logs
 
 ## Installation
 
@@ -69,12 +68,11 @@ The interactive installer offers 3 options:
 
 ### What Gets Installed?
 
-- ✅ Ralph Loop scripts (`ralph-feature.sh`, `ralph-feature.ps1`)
-- ✅ Claude commands (`/ralph`, `/interview`, `/think-critically`, `/plan`)
-- ✅ Claude skills (autonomous loop execution)
-- ✅ Memory system (`.memory-system/` with security filters)
-- ✅ Feature templates (`docs/features/_template/`)
-- ✅ Documentation (complete guides)
+- Claude commands (`/interview`, `/think-critically`, `/plan`)
+- Claude skills (phase execution)
+- Memory system (`.memory-system/` with security filters)
+- Feature templates (`docs/features/_template/`)
+- Documentation (complete guides)
 
 ## Quick Start
 
@@ -85,61 +83,35 @@ mkdir -p docs/features/FEAT-001-auth
 cp -r docs/features/_template/* docs/features/FEAT-001-auth/
 ```
 
-### 2. Run Ralph Loop
-
-```bash
-# Bash/Linux/macOS
-./ralph-feature.sh FEAT-001-auth
-
-# PowerShell/Windows
-.\ralph-feature.ps1 FEAT-001-auth
-```
-
-### 3. Or Use Claude Commands
+### 2. Use Claude Commands
 
 ```bash
 claude code .
 # In Claude:
-/ralph FEAT-001-auth
+/interview FEAT-001-auth
+/think-critically FEAT-001-auth
+/plan FEAT-001-auth
 ```
 
 ## Phase 5.5: VERIFY (Browser E2E Testing)
 
-Ralph Loop now includes **automatic browser testing** using Anthropic's agent-browser.
+Includes **automatic browser testing** using Anthropic's agent-browser.
 
 **Auto-runs when:**
-- ✅ Frontend files changed (tsx/jsx/css/scss)
-- ✅ Test scripts exist in `docs/features/FEAT-XXX/tests/`
+- Frontend files changed (tsx/jsx/css/scss)
+- Test scripts exist in `docs/features/FEAT-XXX/tests/`
 
 **Features:**
-- 🤖 Agent-browser CLI for E2E tests
-- 🔒 Security filters prevent secret leakage
-- 📸 Screenshots + console logs
-- 🚫 Blocks PR if tests fail
-
-**Example test structure:**
-
-```bash
-docs/features/FEAT-001-auth/
-├── tests/
-│   ├── e2e-flow.sh          # Main E2E test
-│   ├── e2e-smoke.sh         # Quick smoke test
-│   ├── helpers.sh           # Reusable functions
-│   └── test-config.json     # Test configuration
-└── test-results/
-    ├── screenshots/
-    ├── console.log
-    └── network.log
-```
+- Agent-browser CLI for E2E tests
+- Security filters prevent secret leakage
+- Screenshots + console logs
+- Blocks PR if tests fail
 
 ## Available Commands
 
 Once installed, you can use:
 
 ```bash
-# Autonomous loop (processes all phases)
-/ralph FEAT-XXX
-
 # Individual phases
 /interview FEAT-XXX          # Phase 1: Capture spec
 /think-critically FEAT-XXX   # Phase 2: Critical analysis
@@ -156,35 +128,15 @@ Once installed, you can use:
 ## Documentation
 
 - [Complete Feature Cycle Guide](./docs/feature_cycle.md)
-- [Ralph Loop Documentation](./docs/ralph-feature-loop.md)
-- [Methodology Article](./docs/RALPH_METHODOLOGY_ARTICLE.md)
 - [Installation Guide](./INSTALLATION.md)
-
-## Architecture
-
-Ralph Loop uses **git worktrees** for parallel feature development:
-
-```
-project/                            ← Main repo
-project-FEAT-001-auth-loop/         ← Worktree for FEAT-001
-project-FEAT-002-api-loop/          ← Worktree for FEAT-002
-project-FEAT-003-dashboard-loop/    ← Worktree for FEAT-003
-```
-
-**Benefits:**
-- Zero conflicts between parallel features
-- Independent branches per feature
-- Clean state for each loop
-- Automatic cleanup after merge
 
 ## Security
 
-Ralph Loop includes comprehensive security features:
+Includes comprehensive security features:
 
-- 🔒 **Pre-commit hooks**: Block secrets before they're committed
-- 🛡️ **Security filters**: 6 pattern types (API keys, tokens, passwords, AWS, private keys, DB URLs)
-- 🧪 **Test data isolation**: Per-feature test users prevent conflicts
-- 📦 **Version locking**: agent-browser@0.8.4 prevents breaking changes
+- **Pre-commit hooks**: Block secrets before they're committed
+- **Security filters**: 6 pattern types (API keys, tokens, passwords, AWS, private keys, DB URLs)
+- **Test data isolation**: Per-feature test users prevent conflicts
 
 ## Requirements
 
@@ -208,10 +160,6 @@ Eduardo Mesones ([@edumesones](https://github.com/edumesones))
 
 ## Support
 
-- 📖 [Documentation](https://github.com/edumesones/not-code-claude-runs-you-pilot)
-- 🐛 [Issues](https://github.com/edumesones/not-code-claude-runs-you-pilot/issues)
-- 💬 [Discussions](https://github.com/edumesones/not-code-claude-runs-you-pilot/discussions)
-
----
-
-**Made with ❤️ for autonomous development**
+- [Documentation](https://github.com/edumesones/not-code-claude-runs-you-pilot)
+- [Issues](https://github.com/edumesones/not-code-claude-runs-you-pilot/issues)
+- [Discussions](https://github.com/edumesones/not-code-claude-runs-you-pilot/discussions)

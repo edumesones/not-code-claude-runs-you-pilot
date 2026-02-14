@@ -1,10 +1,8 @@
 {
   "name": "ralph-spec-agent-mem",
   "version": "1.0.0",
-  "description": "Ralph Loop - Autonomous 9-phase feature development with spec-driven design, agent-browser E2E testing, and memory system",
+  "description": "Spec-driven 9-phase feature development with agent-browser E2E testing and memory system",
   "keywords": [
-    "ralph-loop",
-    "autonomous-development",
     "spec-driven",
     "agent-browser",
     "memory-system",
@@ -25,15 +23,12 @@
   "author": "Eduardo Mesones <edumesones@gmail.com>",
   "license": "MIT",
   "bin": {
-    "ralph-spec-agent-mem": "./bin/ralph-spec-agent-mem",
-    "ralph-loop": "./bin/ralph-spec-agent-mem"
+    "ralph-spec-agent-mem": "./bin/ralph-spec-agent-mem"
   },
   "files": [
     "bin/",
     "install.sh",
     "install.ps1",
-    "ralph-feature.sh",
-    "ralph-feature.ps1",
     ".claude/",
     ".memory-system/",
     "docs/",

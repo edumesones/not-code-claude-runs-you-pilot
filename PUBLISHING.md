@@ -1,6 +1,6 @@
 # Publishing ralph-spec-agent-mem to NPM
 
-Complete guide to publish Ralph Loop to npm as `ralph-spec-agent-mem`.
+Complete guide to publish the methodology to npm as `ralph-spec-agent-mem`.
 
 ## Prerequisites
 

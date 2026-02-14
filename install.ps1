@@ -1,5 +1,5 @@
 ###############################################################################
-# Ralph Loop - Smart Installer (PowerShell)
+# Feature Development Methodology - Smart Installer (PowerShell)
 # Supports both global and project-level installation with intelligent merge
 ###############################################################################
 
@@ -10,7 +10,7 @@ $ErrorActionPreference = "Stop"
 Write-Host @"
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║               RALPH LOOP METHODOLOGY                         ║
+║               FEATURE DEVELOPMENT METHODOLOGY                         ║
 ║            Smart Installer for Claude Code                   ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -53,13 +53,13 @@ function Merge-File {
         Write-Host "  ⚠ $name already exists" -ForegroundColor Yellow
         Write-Host "    Current: $Destination" -ForegroundColor Blue
 
-        if (Ask-YesNo "    Replace with Ralph Loop version?" "N") {
+        if (Ask-YesNo "    Replace with Feature Development Methodology version?" "N") {
             Copy-Item $Source $Destination -Force
             Write-Host "    ✓ Replaced" -ForegroundColor Green
         } else {
-            $backup = "$Destination.ralph-backup"
+            $backup = "$Destination.backup"
             Copy-Item $Source $backup -Force
-            Write-Host "    ✓ Ralph Loop version saved as: $(Split-Path $backup -Leaf)" -ForegroundColor Green
+            Write-Host "    ✓ Feature Development Methodology version saved as: $(Split-Path $backup -Leaf)" -ForegroundColor Green
             Write-Host "    ℹ You can manually merge later" -ForegroundColor Yellow
         }
     } else {
@@ -94,13 +94,13 @@ function Merge-Directory {
             if ($sourceHash -ne $destHash) {
                 Write-Host "  ⚠ $Label/$($_.Name) already exists and is different" -ForegroundColor Yellow
 
-                if (Ask-YesNo "    Replace with Ralph Loop version?" "N") {
+                if (Ask-YesNo "    Replace with Feature Development Methodology version?" "N") {
                     Copy-Item $_.FullName $destFile -Force
                     Write-Host "    ✓ Replaced" -ForegroundColor Green
                     $newCount++
                 } else {
-                    Copy-Item $_.FullName "$destFile.ralph-backup" -Force
-                    Write-Host "    ✓ Saved as $($_.Name).ralph-backup" -ForegroundColor Green
+                    Copy-Item $_.FullName "$destFile.backup" -Force
+                    Write-Host "    ✓ Saved as $($_.Name).backup" -ForegroundColor Green
                     $skipCount++
                 }
             } else {
@@ -200,7 +200,6 @@ if ($installGlobal) {
     New-Item -ItemType Directory -Path $claudeHome -Force | Out-Null
     New-Item -ItemType Directory -Path "$claudeHome\commands" -Force | Out-Null
     New-Item -ItemType Directory -Path "$claudeHome\skills" -Force | Out-Null
-    New-Item -ItemType Directory -Path "$claudeHome\ralph-loop" -Force | Out-Null
 
     # Backup existing CLAUDE.md
     $claudeMd = Join-Path $claudeHome "CLAUDE.md"
@@ -230,15 +229,12 @@ if ($installGlobal) {
     # Copy scripts
     Write-Host ""
     Write-Host "  Installing scripts..." -ForegroundColor Blue
-    Copy-Item "ralph-feature.sh" "$claudeHome\ralph-loop\" -Force
-    Copy-Item "ralph-feature.ps1" "$claudeHome\ralph-loop\" -Force
-
     if (Test-Path ".memory-system") {
-        Copy-Item ".memory-system" "$claudeHome\ralph-loop\" -Recurse -Force
+        Copy-Item ".memory-system" "$claudeHome\" -Recurse -Force
     }
 
     if (Test-Path "docs") {
-        Copy-Item "docs" "$claudeHome\ralph-loop\" -Recurse -Force
+        Copy-Item "docs" "$claudeHome\" -Recurse -Force
     }
 
     Write-Host "  ✓ Scripts installed" -ForegroundColor Green
@@ -265,21 +261,20 @@ if ($installProject) {
     if (Test-Path "CLAUDE.md") {
         if (Test-Path $projectClaudeMd) {
             Write-Host "  ⚠ Project already has CLAUDE.md" -ForegroundColor Yellow
-            if (Ask-YesNo "    Add Ralph Loop instructions to it?" "Y") {
+            if (Ask-YesNo "    Add methodology instructions to it?" "Y") {
                 Add-Content $projectClaudeMd @"
 
-# Ralph Loop Methodology
+# Feature Development Methodology
 
-Ralph Loop is available in this project. See ~/.claude/ralph-loop/docs/ for documentation.
+9-phase feature development system available. See docs/feature_cycle.md for documentation.
 
 Quick commands:
-- /ralph FEAT-XXX - Start autonomous feature development
 - /interview FEAT-XXX - Interview phase
 - /think-critically FEAT-XXX - Critical analysis
 - /plan FEAT-XXX - Planning phase
 
 "@
-                Write-Host "    ✓ Appended Ralph Loop instructions" -ForegroundColor Green
+                Write-Host "    ✓ Appended methodology instructions" -ForegroundColor Green
             }
         } else {
             Copy-Item "CLAUDE.md" $projectClaudeMd -Force
@@ -304,9 +299,6 @@ Quick commands:
     # Copy scripts
     Write-Host ""
     Write-Host "  Installing scripts..." -ForegroundColor Blue
-    Copy-Item "ralph-feature.sh" ".\" -Force -ErrorAction SilentlyContinue
-    Copy-Item "ralph-feature.ps1" ".\" -Force -ErrorAction SilentlyContinue
-
     # Copy .memory-system if not exists
     if (-not (Test-Path ".memory-system")) {
         Copy-Item ".memory-system" ".\" -Recurse -Force -ErrorAction SilentlyContinue
@@ -333,20 +325,7 @@ Write-Host ""
 Write-Host "[5/7] Setting up PATH..." -ForegroundColor Yellow
 
 if ($installGlobal) {
-    $ralphPath = Join-Path $env:USERPROFILE ".claude\ralph-loop"
-    $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
-
-    if ($currentPath -notlike "*ralph-loop*") {
-        [Environment]::SetEnvironmentVariable(
-            "Path",
-            "$currentPath;$ralphPath",
-            "User"
-        )
-        Write-Host "  ✓ Added to PATH" -ForegroundColor Green
-        Write-Host "  ⚠ Restart terminal to apply" -ForegroundColor Yellow
-    } else {
-        Write-Host "  ℹ Already in PATH" -ForegroundColor Blue
-    }
+    Write-Host "  ℹ No PATH changes needed" -ForegroundColor Blue
 }
 
 # Install git hooks
@@ -355,8 +334,6 @@ Write-Host "[6/7] Git hooks (security filters)" -ForegroundColor Yellow
 
 if ((Test-Path ".git") -and (Ask-YesNo "Install security pre-commit hooks in this repo?" "Y")) {
     if ($installGlobal) {
-        & powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.claude\ralph-loop\.memory-system\scripts\install-git-hooks.ps1"
-    } else {
         & powershell -ExecutionPolicy Bypass -File ".memory-system\scripts\install-git-hooks.ps1"
     }
     Write-Host "  ✓ Git hooks installed" -ForegroundColor Green
@@ -376,7 +353,6 @@ if ($installGlobal) {
     $skillCount = (Get-ChildItem "$env:USERPROFILE\.claude\skills" -ErrorAction SilentlyContinue).Count
     Write-Host "   • Commands: $commandCount installed"
     Write-Host "   • Skills: $skillCount installed"
-    Write-Host "   • Scripts: ~/.claude/ralph-loop/" -ForegroundColor Cyan
     Write-Host ""
 }
 
@@ -387,7 +363,6 @@ if ($installProject) {
     $skillCount = (Get-ChildItem ".\.claude\skills" -ErrorAction SilentlyContinue).Count
     Write-Host "   • Commands: $commandCount in project"
     Write-Host "   • Skills: $skillCount in project"
-    Write-Host "   • Scripts: .\ralph-feature.ps1" -ForegroundColor Cyan
     Write-Host ""
 }
 
@@ -404,23 +379,22 @@ if ($installGlobal) {
     Write-Host "  Global: Use in ANY project" -ForegroundColor Green
     Write-Host "    1. cd any-project"
     Write-Host "    2. claude code ."
-    Write-Host "    3. Use commands: /ralph, /interview, etc."
+    Write-Host "    3. Use commands: /interview, /think-critically, etc."
     Write-Host ""
 }
 
 if ($installProject) {
     Write-Host "  Project: Use in THIS project" -ForegroundColor Green
     Write-Host "    1. claude code ."
-    Write-Host "    2. .\ralph-feature.ps1 FEAT-XXX"
+    Write-Host "    2. Use commands: /interview, /think-critically, etc."
     Write-Host ""
 }
 
 Write-Host "Available Commands:" -ForegroundColor Blue
-Write-Host "  • /ralph FEAT-XXX - Start autonomous feature development" -ForegroundColor Green
 Write-Host "  • /interview FEAT-XXX - Interview phase" -ForegroundColor Green
 Write-Host "  • /think-critically FEAT-XXX - Critical analysis" -ForegroundColor Green
 Write-Host "  • /plan FEAT-XXX - Planning phase" -ForegroundColor Green
 Write-Host ""
 
-Write-Host "Happy coding with Ralph Loop! 🚀" -ForegroundColor Magenta
+Write-Host "Happy coding! 🚀" -ForegroundColor Magenta
 Write-Host ""

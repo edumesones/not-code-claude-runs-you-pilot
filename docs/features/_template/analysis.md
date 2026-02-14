@@ -37,7 +37,7 @@ _[One clear sentence defining what we're solving]_
 ### ⚠️ Assumptions Requiring Validation
 - [ ] _[Low confidence + High impact assumption]_
 
-<!-- 🔴 RALPH LOOP: If any assumption has Low confidence + High impact → PAUSE -->
+<!-- 🔴 AUTO-PAUSE: If any assumption has Low confidence + High impact → PAUSE -->
 
 ---
 
@@ -175,13 +175,13 @@ _[Which approach and why]_
 ### 🚩 Red Flags Found
 - _[Critical red flag if any — NONE if clean]_
 
-<!-- 🔴 RALPH LOOP: If critical red flag found → PAUSE -->
+<!-- 🔴 AUTO-PAUSE: If critical red flag found → PAUSE -->
 
 ---
 
 ## 10. AI Delegation Matrix
 
-### Safe for Full AI Automation (Ralph Loop)
+### Safe for Full AI Automation
 - _[Task]_: _[Why safe]_
 
 ### AI with Human Review
@@ -228,7 +228,7 @@ _[Selected approach and why — this feeds directly into Plan phase's design.md]
 ### Confidence Level
 **[High/Medium/Low]** — _[Why this confidence level]_
 
-<!-- 🔴 RALPH LOOP: If confidence level = "Low" → PAUSE. Cannot proceed to Plan. -->
+<!-- 🔴 AUTO-PAUSE: If confidence level = "Low" → PAUSE. Cannot proceed to Plan. -->
 
 ### Red Flags to Watch
 - _[Warning sign 1]_
@@ -247,7 +247,7 @@ _[Selected approach and why — this feeds directly into Plan phase's design.md]
 | Recommended Approach (§11) | → Architecture pattern for design.md |
 | Failure Mitigations (§5) | → Error handling tasks in tasks.md |
 | Invariants (§6) | → Validation rules in implementation |
-| AI Delegation (§10) | → Ralph automation scope per task |
+| AI Delegation (§10) | → AI automation scope per task |
 | Observability (§7) | → Monitoring tasks in tasks.md |
 | Trade-off Positions (§4) | → Technical choices in design.md |
 

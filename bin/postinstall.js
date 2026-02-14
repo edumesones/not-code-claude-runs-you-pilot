@@ -43,8 +43,8 @@ console.log('  • Project: Only in current project');
 console.log('  • Both: Recommended for best experience');
 console.log();
 
-console.log(colorize('📚 What is Ralph Loop?', colors.blue));
-console.log('  Autonomous 9-phase feature development:');
+console.log(colorize('📚 What is this?', colors.blue));
+console.log('  9-phase feature development methodology:');
 console.log('    1. Interview → 2. Think Critically → 3. Plan');
 console.log('    4. Branch → 5. Implement → 5.5 Verify (E2E)');
 console.log('    6. PR → 7. Merge → 8. Wrap-Up');

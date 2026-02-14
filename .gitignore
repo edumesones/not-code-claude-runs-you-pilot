@@ -25,7 +25,7 @@ Thumbs.db
 # Runtime files
 feature-loop-state.json
 activity.md
-ralph-*.log
+*.log
 
 # Test results (generated at runtime)
 docs/features/*/test-results/

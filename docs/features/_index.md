@@ -14,5 +14,5 @@
 2. Create feature folder: `mkdir -p docs/features/FEAT-XXX/context`
 3. Copy template: `cp docs/features/_template/* docs/features/FEAT-XXX/`
 4. Run Interview: `/interview FEAT-XXX`
-5. Let Ralph handle the rest: `ralph-feature.ps1 FEAT-XXX 15`
+5. Continue with: `/think-critically FEAT-XXX`
 

@@ -142,12 +142,12 @@ agent-browser --session "feat-001" open "http://localhost:3000?api=http://localh
 
 ---
 
-## Integration with Ralph Loop
+## Integration with Phase 5.5 (VERIFY)
 
-### Phase 5.5 (VERIFY) - Test Setup
+### Test Setup
 
 ```bash
-# ralph-feature.sh (Phase 5.5)
+# Phase 5.5 (VERIFY)
 
 verify_frontend() {
   local FEATURE_ID=$1
@@ -162,7 +162,7 @@ verify_frontend() {
   export TEST_PASSWORD=$(jq -r '.test_user.password' "$CONFIG")
 
   # 3. Run tests with isolated session
-  local SESSION="ralph-$FEATURE_ID"
+  local SESSION="test-$FEATURE_ID"
   bash "docs/features/$FEATURE_ID/tests/e2e-flow.sh" --session "$SESSION"
 
   # 4. Cleanup
@@ -207,7 +207,7 @@ verify_frontend() {
 - **Use feature-scoped test users** (feat-xxx-test@example.com)
 - **Clean up after tests** (delete test users, reset state)
 - **Tag test data** (add `feature_tag: FEAT-XXX` to DB records)
-- **Unique session names** (ralph-FEAT-XXX)
+- **Unique session names** (test-FEAT-XXX)
 - **Environment variables** for credentials (never hardcode)
 
 ### DON'T ❌
@@ -232,8 +232,8 @@ bash .memory-system/scripts/cleanup-test-user.sh FEAT-XXX
 **Cause:** Two features using same session name
 **Fix:** Ensure session name includes feature ID:
 ```bash
-SESSION="ralph-$FEATURE_ID"  # ✅ Good
-SESSION="ralph-test"          # ❌ Bad
+SESSION="test-$FEATURE_ID"  # ✅ Good
+SESSION="generic-test"          # ❌ Bad
 ```
 
 ### Issue: "Stale data in test"
@@ -269,7 +269,7 @@ SESSION="ralph-test"          # ❌ Bad
 ```bash
 #!/bin/bash
 FEATURE_ID="FEAT-001-login"
-SESSION="ralph-$FEATURE_ID"
+SESSION="test-$FEATURE_ID"
 
 # Load config
 TEST_EMAIL=$(jq -r '.test_user.email' tests/test-config.json)
@@ -307,7 +307,7 @@ FEATURE_ID="FEAT-002-crud"
 docker exec postgres pg_dump testdb > ./test-results/db-snapshot.sql
 
 # Run test
-agent-browser --session "ralph-$FEATURE_ID" open "http://localhost:3000/items"
+agent-browser --session "test-$FEATURE_ID" open "http://localhost:3000/items"
 # ... test actions ...
 
 # Restore snapshot
@@ -362,8 +362,8 @@ bash .memory-system/scripts/security-filters.sh scan docs/features/FEAT-XXX/test
 **Next Steps:**
 1. Create test user setup/cleanup scripts
 2. Add test-config.json template to feature scaffold
-3. Update ralph-feature.sh to call setup-test-user.sh in Phase 5.5
-4. Document in Ralph Loop Guide
+3. Call setup-test-user.sh in Phase 5.5
+4. Document in feature cycle guide
 
 ---
 

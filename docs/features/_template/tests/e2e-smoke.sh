@@ -19,7 +19,7 @@ fi
 
 FEATURE_ID="${FEATURE_ID:-FEAT-XXX}"
 BASE_URL="${BASE_URL:-http://localhost:3000}"
-SESSION="${SESSION:-ralph-$FEATURE_ID-smoke}"
+SESSION="${SESSION:-test-$FEATURE_ID-smoke}"
 RESULTS_DIR="$SCRIPT_DIR/../test-results"
 
 ###############################################################################

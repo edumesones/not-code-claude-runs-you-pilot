@@ -39,7 +39,7 @@ temp/
 # Project-specific (don't publish runtime data)
 feature-loop-state.json
 activity.md
-ralph-*.log
+*.log
 
 # Keep only template, not actual feature folders with data
 docs/features/FEAT-*/

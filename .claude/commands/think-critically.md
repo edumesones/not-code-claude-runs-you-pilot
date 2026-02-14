@@ -97,7 +97,7 @@ Rigorous pre-implementation analysis that simulates a paranoid staff engineer re
 ║  4. All 11 steps for complex/critical features                               ║
 ║     Steps 1-2-5-11 for smaller features                                      ║
 ║                                                                               ║
-║  5. In Ralph Loop: auto-PAUSE if confidence is Low in Step 11                ║
+║  5. In autonomous mode: auto-PAUSE if confidence is Low in Step 11           ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -111,9 +111,9 @@ Interview → THINK CRITICALLY → Plan → Branch → Implement → PR → Merg
              Feeds analysis.md → Plan reads it for design.md
 ```
 
-## Ralph Loop Integration
+## Autonomous Integration
 
-When running autonomously via Ralph Loop:
+When running autonomously:
 
 ```
 Iteration 1: INTERVIEW → reads spec.md, pauses if TBD → emits INTERVIEW_COMPLETE
@@ -131,7 +131,7 @@ The Plan phase reads `analysis.md` in addition to `spec.md` to:
 - Select recommended approach (from Step 11)
 - Incorporate failure mitigations (from Step 5) into design
 - Include invariants/boundaries (from Step 6) as validations
-- Use AI delegation matrix (from Step 10) to decide Ralph automation scope
+- Use AI delegation matrix (from Step 10) to decide AI automation scope
 - Add observability requirements (from Step 7) to implementation tasks
 
 ## Example Output Summary

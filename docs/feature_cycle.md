@@ -186,11 +186,11 @@ Análisis riguroso pre-implementación que simula una revisión de un staff engi
  7. Observabilidad                - ¿Cómo sabremos si funciona?
  8. Reversibilidad                - ¿Podemos deshacer esto?
  9. Revisión Adversarial 🔴       - Ataca tu propio diseño
-10. Delegación IA                 - ¿Qué puede automatizar Ralph?
+10. Delegación IA                 - ¿Qué puede automatizar la IA?
 11. Resumen de Decisión           - Síntesis final + nivel de confianza
 ```
 
-### ⚠️ Condiciones de Pausa (Ralph Loop)
+### ⚠️ Condiciones de Pausa
 
 El análisis PAUSA automáticamente si:
 1. **Step 2:** Asunción con confianza Baja + impacto Alto → requiere validación
@@ -333,7 +333,7 @@ Implementar siguiendo el plan, con documentación viva.
 Validar automáticamente cambios frontend mediante browser automation antes de crear PR. Usa agent-browser (Anthropic CLI) para E2E testing.
 
 ### ¿Cuándo se ejecuta?
-**Automático** cuando Ralph Loop detecta:
+**Automático** cuando se detecta:
 1. ✅ Cambios en archivos frontend (tsx/jsx/css/scss)
 2. ✅ Scripts de test existen en `docs/features/FEAT-XXX/tests/`
 
@@ -362,23 +362,6 @@ cp -r docs/features/_template/tests docs/features/FEAT-XXX/tests
 ```bash
 # Cambiar URLs, selectores, assertions para tu feature
 vim docs/features/FEAT-XXX/tests/e2e-flow.sh
-```
-
-### Ejecución Automática (Ralph Loop)
-
-```bash
-./ralph-feature.sh FEAT-XXX  # o .ps1 en PowerShell
-```
-
-Cuando llega a Phase 5.5:
-```
-[FEAT-XXX] 12:34:56 [INFO] Executing Verify phase (Phase 5.5)
-[FEAT-XXX] 12:34:56 [INFO] Frontend changes detected
-[FEAT-XXX] 12:34:57 [INFO] Running E2E flow tests...
-[FEAT-XXX] 12:35:10 [SUCCESS] E2E tests passed
-[FEAT-XXX] 12:35:11 [INFO] Running security filters...
-[FEAT-XXX] 12:35:12 [SUCCESS] No secrets detected
-[FEAT-XXX] 12:35:12 [SUCCESS] VERIFY phase complete
 ```
 
 ### Qué hace Phase 5.5
@@ -418,7 +401,7 @@ Antes de commit, todos los test results pasan por security filters:
 bash .memory-system/scripts/install-git-hooks.sh
 ```
 
-### Manual Testing (Sin Ralph Loop)
+### Manual Testing
 
 ```bash
 # Ejecutar tests manualmente
@@ -456,7 +439,7 @@ git commit -m "FEAT-XXX: Add filtered test results"
 
 **Quiero skip Phase 5.5:**
 - No crear `docs/features/FEAT-XXX/tests/` directory
-- Ralph Loop detectará y saltará automáticamente
+- Se detectará automáticamente y se saltará
 
 ### 📄 Documentos actualizados
 - `test-results/test-report.md` → Test results
@@ -481,7 +464,7 @@ git commit -m "FEAT-XXX: Final adjustments"
 # 3. Push
 git push -u origin feature/XXX-nombre
 
-# 4. Crear PR (Ralph Loop incluye test results automáticamente)
+# 4. Crear PR (incluir test results si aplica)
 gh pr create --title "FEAT-XXX: Nombre Descriptivo" --body "..." --base main
 ```
 
@@ -548,35 +531,6 @@ Capturar aprendizajes, cerrar contexto, y documentar decisiones para futuras ses
 - `context/decisions.md` → Decisiones finales consolidadas
 - `status.md` → Phase: Wrap-Up ✅
 - `_index.md` → 🟢 Complete
-
----
-
-## Ralph Loop (Ejecución Autónoma)
-
-### Flujo Completo
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  RALPH LOOP - 9 FASES AUTÓNOMAS                                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Iter 1: INTERVIEW          → spec.md            → INTERVIEW_COMPLETE       │
-│  Iter 2: THINK CRITICALLY   → analysis.md        → ANALYSIS_COMPLETE        │
-│           ⚠️ Pausa si: Low conf + High impact / Red flag / Low confidence    │
-│  Iter 3: PLAN               → design.md + tasks  → PLAN_COMPLETE            │
-│  Iter 4: BRANCH             → feature/XXX-name   → BRANCH_COMPLETE          │
-│  Iter 5-N: IMPLEMENT        → código + tests     → IMPLEMENT_PROGRESS       │
-│           ...hasta que todas las tasks estén ✅   → IMPLEMENT_COMPLETE       │
-│  Iter N+1: VERIFY           → browser E2E tests  → VERIFY_COMPLETE          │
-│           ⚠️ Auto-skip si: No frontend changes o no test scripts            │
-│           ⚠️ Bloquea si: Tests fallan                                        │
-│  Iter N+2: PR               → push + gh pr       → PR_COMPLETE              │
-│  Iter N+3: MERGE            → espera aprobación  → MERGE_COMPLETE           │
-│  Iter N+4: WRAP-UP          → wrap_up.md         → FEATURE_COMPLETE         │
-│                                                                              │
-│  ✅ LOOP TERMINADO                                                           │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
 
 ---
 
@@ -703,21 +657,16 @@ docs/features/FEAT-XXX/
 /architecture
 /mvp
 
-# Per-Feature Cycle (manual o via Ralph)
+# Per-Feature Cycle
 /interview FEAT-001-auth
 /think-critically FEAT-001-auth    # 11-step protocol → analysis.md
 /plan implement FEAT-001-auth      # Lee spec.md + analysis.md
 git checkout -b feature/001-auth
-# Implement (via Ralph o manual)
-# VERIFY (automático si frontend changes)  ← NUEVO
+# Implement tasks
+# VERIFY (automático si frontend changes)
 /git pr
 # Review + merge
 /wrap-up FEAT-001-auth
-
-# O completamente autónomo (9 fases):
-./ralph-feature.sh FEAT-001-auth  # Ejecuta las 9 fases autónomamente
-# o PowerShell:
-.\ralph-feature.ps1 FEAT-001-auth
 ```
 
 ---

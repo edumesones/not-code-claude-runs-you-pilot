@@ -3,7 +3,7 @@
 /**
  * ralph-spec-agent-mem - CLI Installer
  *
- * Cross-platform installer for Ralph Loop Methodology
+ * Cross-platform installer for Feature Development Methodology
  * Supports: Global installation, Project-level installation, Both
  */
 
@@ -37,7 +37,7 @@ function printBanner() {
   console.log(colorize(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║               RALPH LOOP METHODOLOGY                         ║
+║          FEATURE DEVELOPMENT METHODOLOGY                     ║
 ║            Spec-Driven Agent Memory System                   ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -62,8 +62,8 @@ function printHelp() {
   console.log('  npx ralph-spec-agent-mem install');
   console.log('  npx ralph-spec-agent-mem install --global');
   console.log();
-  console.log(colorize('What is Ralph Loop?', colors.blue));
-  console.log('  9-phase autonomous feature development system:');
+  console.log(colorize('What is this?', colors.blue));
+  console.log('  9-phase feature development system:');
   console.log('    1. Interview → 2. Think Critically → 3. Plan');
   console.log('    4. Branch → 5. Implement → 5.5 Verify (E2E)');
   console.log('    6. PR → 7. Merge → 8. Wrap-Up');
@@ -91,7 +91,7 @@ function runInstaller(installType = null) {
     process.exit(1);
   }
 
-  console.log(colorize('🚀 Starting Ralph Loop installer...', colors.green));
+  console.log(colorize('🚀 Starting installer...', colors.green));
   console.log();
 
   let cmd, cmdArgs;
@@ -133,9 +133,9 @@ function runInstaller(installType = null) {
       console.log(colorize('✅ Installation complete!', colors.green));
       console.log();
       console.log(colorize('Next steps:', colors.bright));
-      console.log('  1. Read the docs: cat ~/.claude/ralph-loop/docs/feature_cycle.md');
+      console.log('  1. Read the docs: cat docs/feature_cycle.md');
       console.log('  2. Create a feature: mkdir -p docs/features/FEAT-001');
-      console.log('  3. Run Ralph Loop: ./ralph-feature.sh FEAT-001');
+      console.log('  3. Start interview: /interview FEAT-001');
       console.log();
     } else {
       console.error(colorize(`❌ Installation failed with code ${code}`, colors.red));
