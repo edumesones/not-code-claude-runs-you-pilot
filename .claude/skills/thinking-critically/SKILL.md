@@ -657,3 +657,18 @@ Next step:
 | `feature-cycle` | Think Critically is Phase 2 with conditional pause |
 | `architecture-designer` | Run Think Critically for each major ADR |
 | `status-reporter` | Updates all status files after completion |
+| `agent-orchestrator` | **NEW:** After Steps 1-8, invokes A6 (architect) for Step 9 adversarial review |
+
+## Multi-Agent Integration
+
+If `docs/agents.md` exists and A6 (architect) is assigned to Phase 2:
+
+1. Human completes Steps 1-8 of the 11-step protocol
+2. This skill checks `docs/agents.md` for Phase 2 agents
+3. If A6 is assigned → invoke `agent-orchestrator` to launch A6 as Task sub-agent
+4. A6 receives `analysis.md` (Steps 1-8) + `spec.md` as input
+5. A6 executes Step 9 (Adversarial Review) using `docs/agents/A6/RULES.md`
+6. A6's output is appended to `analysis.md` as Step 9
+7. Human continues with Steps 10-11
+
+**Fallback:** If `docs/agents.md` does not exist → execute all 11 steps in single-agent mode (current behavior).

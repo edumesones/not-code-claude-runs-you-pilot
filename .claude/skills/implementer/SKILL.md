@@ -350,3 +350,48 @@ If something goes wrong:
 - Ask user for guidance
 - Document issue in context/blockers.md
 - Log attempt in session_log.md
+
+## Multi-Agent Integration
+
+If `docs/agents.md` exists with agents assigned to Phase 5:
+
+### This Skill Becomes Agent A1 (Implementor)
+
+When multi-agent mode is active, the implementer skill operates as agent A1 with these additions:
+
+### Checkpoint Relay (Every 3 Tasks)
+
+After each checkpoint (3 tasks completed):
+
+1. **Commit + push** as normal
+2. **Invoke `agent-orchestrator`** which launches:
+   - **A2 (reviewer)** as Task sub-agent → receives git diff since last checkpoint
+   - **A3 (bug-detector)** as Task sub-agent → receives diff + A2's review
+3. **Process feedback:**
+   - If A2 verdict = "NEEDS CHANGES" → apply fixes before next task batch
+   - If A3 finds critical bugs → apply fixes before next task batch
+   - If both pass → continue to next 3 tasks
+
+### Parallel Test Writer (A5)
+
+If A5 (test-writer) is assigned for parallel execution:
+- At Phase 5 start, `agent-orchestrator` launches A5 in a separate worktree via `fork-feature`
+- A5 writes tests alongside A1's implementation
+- Both operate on independent file domains (A1: `src/`, A5: `tests/`)
+
+### Session Log with Agent Activity
+
+Agent activity is logged in `context/session_log.md`:
+
+```markdown
+### [YYYY-MM-DD HH:MM] - Checkpoint N (Multi-Agent)
+
+**A1 (implementor):** Tasks N-N+2 completed
+**A2 (reviewer):** Review verdict: PASS / NEEDS CHANGES
+**A3 (bug-detector):** X issues found (Y critical)
+**Action:** {Applied fixes / Continued / Escalated to user}
+```
+
+### Fallback
+
+If `docs/agents.md` does not exist → this skill runs exactly as before (single-agent mode, no relay).

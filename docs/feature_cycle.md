@@ -6,6 +6,8 @@ Este documento define el flujo de trabajo exacto para implementar cualquier feat
 
 **NUEVO:** Fase 5.5 (VERIFY) - Browser automation tests con agent-browser para validación frontend automática.
 
+**NUEVO:** Multi-Agent System - Agentes especializados por fase con relay pattern y paralelización. Ver `docs/agents.md` para configuración de agentes del proyecto.
+
 ---
 
 ## Resumen Visual
@@ -209,8 +211,22 @@ Si todos los checks pasan → continúa automáticamente a Plan.
 | Matriz de delegación IA (Step 10) | Decide scope de automatización |
 | Requisitos de observabilidad (Step 7) | Agrega tasks de monitoreo |
 
+### Multi-Agent Integration (Phase 2)
+
+Si `docs/agents.md` existe y tiene A6 (architect) asignado a Phase 2:
+
+1. El humano completa Steps 1-8 del protocolo de 11 pasos
+2. El **agent-orchestrator** lanza A6 como Task sub-agent
+3. A6 ejecuta Step 9 (Adversarial Review) con contexto limpio
+4. A6 produce findings que se appendean a `analysis.md`
+5. Si A6 detecta red flag crítico → AUTO-PAUSE
+
+```
+Human (Steps 1-8) → A6/architect (Step 9: Adversarial Review) → Human (Steps 10-11)
+```
+
 ### 📄 Documentos actualizados
-- `analysis.md` → Resultado del análisis
+- `analysis.md` → Resultado del análisis (con Step 9 del agente A6)
 - `context/decisions.md` → Decisiones clave
 - `status.md` → Phase: Critical Analysis ✅
 
@@ -234,8 +250,22 @@ Diseñar la implementación ANTES de escribir código. Ahora informado por el an
 4. Genera plan con archivos, orden, snippets
 5. Usuario revisa y aprueba
 
+### Multi-Agent Integration (Phase 3)
+
+Si `docs/agents.md` existe y tiene A6 (architect) asignado a Phase 3:
+
+1. `implementation-planner` genera `design.md` + `tasks.md`
+2. El **agent-orchestrator** lanza A6 como Task sub-agent
+3. A6 valida el diseño contra los findings de `analysis.md`
+4. Si A6 verdict = "NEEDS REVISION" → re-run planner con feedback
+5. Si A6 verdict = "APPROVED" → proceder a Phase 4
+
+```
+implementation-planner → A6/architect (Validation) → Proceed or Revise
+```
+
 ### 📄 Documentos actualizados
-- `design.md` → Arquitectura técnica (informada por analysis.md)
+- `design.md` → Arquitectura técnica (informada por analysis.md, validada por A6)
 - `tasks.md` → Checklist ordenado con todas las tasks
 - `status.md` → Phase: Plan ✅
 
@@ -321,9 +351,49 @@ Implementar siguiendo el plan, con documentación viva.
 5. Integración con sistema existente
 6. Tests
 
+### Multi-Agent Integration (Phase 5)
+
+Si `docs/agents.md` existe, Phase 5 se orquesta con múltiples agentes:
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│ ORQUESTACIÓN MULTI-AGENT (Phase 5)                                         │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│   PARALELO (worktrees via fork-feature):                                  │
+│   ┌────────────────────────────────────┐                                  │
+│   │ A1 (implementor) → ejecuta tasks   │                                  │
+│   │ A5 (test-writer)  → escribe tests  │  ← Dominios separados           │
+│   └────────────────────────────────────┘                                  │
+│                │                                                           │
+│                ▼ (cada 3 tasks = checkpoint)                               │
+│   RELAY SECUENCIAL (Task sub-agents):                                     │
+│   ┌────────────────────────────────────┐                                  │
+│   │ A2 (reviewer)     → review code    │                                  │
+│   │ A3 (bug-detector) → scan bugs      │  ← Feedback a A1                │
+│   └────────────────────────────────────┘                                  │
+│                │                                                           │
+│                ▼                                                            │
+│   A1 aplica feedback → siguiente checkpoint → repetir                     │
+│                                                                            │
+│   OPCIONAL:                                                                │
+│   A4 (doc-writer) → documenta componentes completados                     │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Protocolo de Checkpoint:**
+1. A1 completa 3 tasks → commit + push
+2. Orchestrator lanza A2 (reviewer) como Task → produce review report
+3. Orchestrator lanza A3 (bug-detector) como Task → produce bug report
+4. A1 recibe feedback → aplica fixes → continúa
+5. Repetir hasta completar todas las tasks
+
+**Sin `agents.md`:** Phase 5 funciona exactamente como antes (single-agent mode).
+
 ### 📄 Documentos actualizados (CONTINUAMENTE)
 - `tasks.md` → Marcadores actualizados por cada task
-- `status.md` → Progress actualizado cada 3 tasks
+- `status.md` → Progress actualizado cada 3 tasks (+ agent execution log)
 
 ---
 
@@ -441,6 +511,15 @@ git commit -m "FEAT-XXX: Add filtered test results"
 - No crear `docs/features/FEAT-XXX/tests/` directory
 - Se detectará automáticamente y se saltará
 
+### Multi-Agent Integration (Phase 5.5)
+
+Si `docs/agents.md` existe con A3 y A5 asignados a Phase 5.5:
+
+```
+Tests fallan → A3 (bug-detector: root cause analysis) → A5 (test-writer: fix tests)
+              └→ Si bug en producción: relay back a A1 (implementor)
+```
+
 ### 📄 Documentos actualizados
 - `test-results/test-report.md` → Test results
 - `test-results/screenshots/` → Visual evidence
@@ -488,6 +567,19 @@ Si Phase 5.5 (VERIFY) corrió, el PR automáticamente incluye:
 [Secrets redacted]
 ```
 
+### Multi-Agent Integration (Phase 6)
+
+Si `docs/agents.md` existe con A2 y A4 asignados a Phase 6:
+
+```
+A2 (reviewer: final review) → A4 (doc-writer: PR description) → gh pr create
+```
+
+1. A2 revisa el diff completo desde base branch → final review report
+2. Si A2 encuentra issues críticos → de vuelta a Phase 5
+3. A4 genera PR description con change summary + test results
+4. PR se crea con la descripción de A4
+
 ### 📄 Documentos actualizados
 - `status.md` → Phase: PR ✅, PR: #123 [url]
 - `_index.md` → Status: 🔵 In Review
@@ -526,8 +618,20 @@ Capturar aprendizajes, cerrar contexto, y documentar decisiones para futuras ses
 3. Registrar deuda técnica creada
 4. Actualizar context files para futuras features
 
+### Multi-Agent Integration (Phase 8)
+
+Si `docs/agents.md` existe con A4 y A6 asignados a Phase 8:
+
+```
+A4 (doc-writer: wrap_up.md) → A6 (architect: architectural learnings) → merge into wrap_up.md
+```
+
+1. A4 genera `wrap_up.md` con learnings de implementación
+2. A6 captura learnings arquitectónicos y evolución de patrones
+3. Se appendean los findings de A6 a `wrap_up.md`
+
 ### 📄 Documentos actualizados
-- `context/wrap_up.md` → Aprendizajes capturados
+- `context/wrap_up.md` → Aprendizajes capturados (con learnings de A4 + A6)
 - `context/decisions.md` → Decisiones finales consolidadas
 - `status.md` → Phase: Wrap-Up ✅
 - `_index.md` → 🟢 Complete
@@ -544,22 +648,29 @@ docs/features/FEAT-XXX/
 ├── tasks.md               ← Phase 3: Plan
 ├── tests.md               ← Phase 5: Implement
 ├── status.md              ← Updated each phase
-├── tests/                 ← Phase 5.5: VERIFY (NEW!)
+├── tests/                 ← Phase 5.5: VERIFY
 │   ├── helpers.sh         │   Reusable test functions
 │   ├── e2e-flow.sh        │   Main E2E test
 │   ├── e2e-smoke.sh       │   Quick smoke tests
 │   └── test-config.json   │   Test configuration
-├── test-results/          ← Generated by Phase 5.5 (NEW!)
+├── test-results/          ← Generated by Phase 5.5
 │   ├── screenshots/       │   Visual evidence
 │   ├── videos/            │   (optional)
 │   ├── console-logs.txt   │   Filtered
 │   ├── network-logs.json  │   Filtered
 │   └── test-report.md     │   Test summary
 └── context/
-    ├── session_log.md
+    ├── session_log.md     ← Includes agent orchestration logs
     ├── decisions.md       ← Enriched by Think Critically
     ├── blockers.md
     └── wrap_up.md         ← Phase 8: Wrap-Up
+
+docs/                       ← Project-level (NEW: Multi-Agent)
+├── agents.md              ← Agent registry & phase assignments
+└── agents/
+    └── {agent-id}/
+        ├── RULES.md       ← Agent rules & boundaries
+        └── harness.md     ← Self-verification test harness
 ```
 
 ---
@@ -645,6 +756,44 @@ docs/features/FEAT-XXX/
 | No capturar learnings | Wrap-Up al final |
 | Ignorar red flags del análisis | Resolver antes de implementar |
 | Proceder con confianza baja | Validar asunciones primero |
+| Un agente hace todo | Agentes especializados por rol |
+| Agentes sin RULES.md | Cada agente con reglas y límites claros |
+| Ignorar feedback de agentes | Aplicar feedback del reviewer y bug-detector |
+
+---
+
+## Multi-Agent System
+
+### Concepto
+
+El sistema multi-agente permite que agentes especializados colaboren dentro de cada fase:
+
+- **Relay Pattern**: Agentes se pasan trabajo en cadena (A1 → A2 → A3 → A1)
+- **Paralelización**: Agentes con dominios independientes trabajan en paralelo (worktrees)
+- **Contexto limpio**: Cada agente opera con su propio "headspace" enfocado
+- **Andamiaje > Modelo**: RULES.md + harness.md dan al agente las herramientas para auto-verificarse
+
+### Configuración
+
+1. **Durante `/new-project`**: El skill `agent-designer` deriva agentes de las características del proyecto
+2. **Archivo `docs/agents.md`**: Define qué agentes hay, cuándo activan, y cómo ejecutan
+3. **Directorio `docs/agents/{id}/`**: Contiene RULES.md (reglas) y harness.md (auto-verificación) por agente
+4. **Backward compatible**: Si no existe `agents.md`, todo funciona como antes (single-agent mode)
+
+### Modelos de Ejecución
+
+| Modelo | Cuándo | Mecanismo |
+|--------|--------|-----------|
+| **Task sub-agent** | Agentes dentro de una fase (reviewer, bug-detector) | Claude `Task` tool con RULES.md como prompt |
+| **Worktree** | Implementación paralela (backend + frontend) | `fork-feature` skill |
+| **Secuencial** | Relay simple de 2 agentes | Misma sesión, prompts secuenciales |
+
+### Para Proyectos Existentes
+
+Proyectos sin `agents.md` pueden activar multi-agent en cualquier momento:
+```
+/design-agents
+```
 
 ---
 
@@ -656,17 +805,19 @@ docs/features/FEAT-XXX/
 /saas-validate project      # Gate: Pain Level 7+?
 /architecture
 /mvp
+# NEW: Agent Design (automático en /new-project, o manual):
+/design-agents               # Deriva agentes → agents.md + RULES.md
 
-# Per-Feature Cycle
+# Per-Feature Cycle (multi-agent si agents.md existe)
 /interview FEAT-001-auth
-/think-critically FEAT-001-auth    # 11-step protocol → analysis.md
-/plan implement FEAT-001-auth      # Lee spec.md + analysis.md
+/think-critically FEAT-001-auth    # Steps 1-8 human + Step 9 A6/architect
+/plan implement FEAT-001-auth      # Planner + A6 validation
 git checkout -b feature/001-auth
-# Implement tasks
-# VERIFY (automático si frontend changes)
-/git pr
-# Review + merge
-/wrap-up FEAT-001-auth
+# Implement: A1 + A5 parallel, A2 + A3 relay at checkpoints
+# VERIFY: A3 + A5 if tests fail (automático si frontend changes)
+/git pr                             # A2 final review + A4 PR description
+# Review + merge (human)
+/wrap-up FEAT-001-auth             # A4 + A6 learnings
 ```
 
 ---

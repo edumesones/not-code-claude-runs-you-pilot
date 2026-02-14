@@ -319,7 +319,21 @@ Next steps:
 **This skill MUST call status-reporter at the end:**
 
 1. Update feature status.md
-2. Update global _index.md  
+2. Update global _index.md
 3. Log action to docs/status-log.md (if exists)
 
 See `status-reporter` skill for details.
+
+## Multi-Agent Integration
+
+If `docs/agents.md` exists and A6 (architect) is assigned to Phase 3:
+
+1. This skill generates `design.md` + `tasks.md` as normal
+2. After generation, check `docs/agents.md` for Phase 3 agents
+3. If A6 is assigned → invoke `agent-orchestrator` to launch A6 as Task sub-agent
+4. A6 receives `design.md` + `tasks.md` + `analysis.md` as input
+5. A6 validates design against analysis findings using `docs/agents/A6/RULES.md`
+6. If A6 verdict = "NEEDS REVISION" → flag issues to user, re-run planner with feedback
+7. If A6 verdict = "APPROVED" → append validation report to `design.md`, proceed
+
+**Fallback:** If `docs/agents.md` does not exist → no validation step (current behavior).
